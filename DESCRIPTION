@@ -1,0 +1,30 @@
+Package: MRCO
+Type: Package
+Title: Multi Reolution Cluster Optimization
+Version: 0.1.0
+Author: Peter Wolf
+Maintainer: <peterwolf4@protonmail.com>
+Description: Creates tree like graph from multiple input clustering resolutions by stacking them. Clusters can be plotted as piecharts with proportions of sample level metadata. Automatic mode detects 'most stable' cluster compositions across resolution change and returns stable clusters. It is possible to manually select any combination of the plotted clusters. Multiple clusters selecting the same sample will be merged according to an argument. Finally, each sample will either be in an selected stable cluster or discarded and collected in the 'debris' cluster.
+License: GPL-3
+Encoding: UTF-8
+RoxygenNote: 7.2.1
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    plotly,
+    Seurat
+VignetteBuilder: knitr
+Imports:
+    dplyr,
+    tibble,
+    rlang,
+    ggplot2,
+    ggraph,
+    tidygraph,
+    stringr,
+    tidyr,
+    ggnewscale,
+Config/testthat/edition: 3
+Depends: 
+    R (>= 3.5.0)
