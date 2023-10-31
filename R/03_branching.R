@@ -13,7 +13,7 @@
 
 
 
-create_node_branch_list_bf <- function(graph_layout = graph_layout,
+create_node_branch_list_bf_MRCO <- function(graph_layout = graph_layout,
                                        edges = edges,
                                        edge_num_size_filter = 0,
                                        edge_prop_size_filter = 0.05,

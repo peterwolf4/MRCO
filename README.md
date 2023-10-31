@@ -110,7 +110,7 @@ MRCO(example_clustering)
 #> Arguments prefix and suffix are highly suggested! Please make sure that MRCO can identify each clustering resolution column.
 ```
 
-<img src="man/figures/README-A basic MRCO run-1.png" width="100%" />
+<img src="man/figures/README-A basic MRCO run-1.png" width="75%" />
 
 ``` r
 
@@ -119,7 +119,7 @@ MRCO(example_clustering)
 MRCO(example_data, prefix = "0.")
 ```
 
-<img src="man/figures/README-A basic MRCO run-2.png" width="100%" />
+<img src="man/figures/README-A basic MRCO run-2.png" width="75%" />
 
 ``` r
 
@@ -127,7 +127,7 @@ MRCO(example_data, prefix = "0.")
 MRCO(example_data, metadata_column_name = "quality",prefix = "0.")
 ```
 
-<img src="man/figures/README-A basic MRCO run-3.png" width="100%" />
+<img src="man/figures/README-A basic MRCO run-3.png" width="75%" />
 
 ``` r
 ### The example data shows no clear seperation based on sample quality, good sign.
@@ -135,7 +135,7 @@ MRCO(example_data, metadata_column_name = "quality",prefix = "0.")
 MRCO(example_data, metadata_column_name = "expr_A",prefix = "0.")
 ```
 
-<img src="man/figures/README-A basic MRCO run-4.png" width="100%" />
+<img src="man/figures/README-A basic MRCO run-4.png" width="75%" />
 
 ``` r
 ### Example A: graph hints that cluster 3 at resolution step 4 (4_3);
@@ -144,7 +144,7 @@ MRCO(example_data, metadata_column_name = "expr_A",prefix = "0.")
 MRCO(example_data, metadata_column_name = "expr_B",prefix = "0.")
 ```
 
-<img src="man/figures/README-A basic MRCO run-5.png" width="100%" />
+<img src="man/figures/README-A basic MRCO run-5.png" width="75%" />
 
 ``` r
 ### Example B: graph hints that lefthand clusters have rather high-;
@@ -165,7 +165,7 @@ MRCO_clustering <- MRCO(example_data, prefix = "0.",
      merge_downwards = FALSE)
 ```
 
-<img src="man/figures/README-A basic MRCO run-6.png" width="100%" />
+<img src="man/figures/README-A basic MRCO run-6.png" width="75%" />
 
 ``` r
 
