@@ -1,30 +1,33 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
 # MRCO
-
 **M**ulti **R**esolution **C**luster **O**ptimization
-<!-- badges: start --> <!-- badges: end -->
+<!-- badges: start -->
+<!-- badges: end -->
 
-Visualize your clustering of multiple independently generated
-resolutions (or sensitivities) in a stacked tree like graph. It shows if
-clusters remain in similar order across resolution change of
-reiterations using the same clustering algorithm. Color clusters as
-pie-charts based on their sample proportions, if sample level metadata
-is included in the input, to see if cluster splitting is correlating
-with a split of metadata groups. If samples remain in same cluster
-grouping across many resolution ‘steps’, we assume a cluster to be
-stable. An automated cluster selection algorithm is implemented to
-select the ‘most stable’ clusters relative within the given data.
-Samples that frequently change between clusters upon change in
-resolution depict an uncertain state. Therefore, a ‘debris’ cluster is
-created if samples are not part of any of the selected stable
-clusters.  
-The software was tested on single cell RNA-Sequencing data, but can be
-applied to any type of data (on your own risk). The general concept
-remains the same: A clustering algorithm can cluster your data similar
-multiple times, the similarity between multiple reiterations can be used
-to infer the most stable configuration for your experimental scope.
+
+Visualize your clustering of multiple independently generated resolutions (or sensitivities) in a stacked tree like graph.
+It shows if clusters remain in similar order across resolution change of reiterations using the same clustering algorithm.
+Color clusters as pie-charts based on their sample proportions, if sample level metadata is included in the input, to see if cluster splitting is correlating with a split of metadata groups.
+If samples remain in same cluster grouping across many resolution 'steps', we assume a cluster to be stable.
+An automated cluster selection algorithm is implemented to select the 'most stable' clusters relative within the given data.
+Samples that frequently change between clusters upon change in resolution depict an uncertain state.
+Therefore, a 'debris' cluster is created if samples are not part of any of the selected stable clusters.   
+The software was tested on single cell RNA-Sequencing data, but can be applied to any type of data (on your own risk).
+The general concept remains the same: A clustering algorithm can cluster your data similar multiple times, the similarity between multiple reiterations can be used to infer the most stable configuration for your experimental scope.
 
 ## Installation
 
@@ -40,7 +43,7 @@ devtools::install_github("peterwolf4/MRCO")
 
 This is a basic example which shows you how to solve a common problem:
 
-``` r
+```{r example data}
 
 # Create Example dataframe
 
@@ -74,15 +77,7 @@ example_metadata <- data.frame(
 ## **Be sure the order of your samples align**, in this example, they do not.
 
 head(example_clustering, 3)
-#>        0.1 0.2 0.3 0.4
-#> cell_1   0   1   0   3
-#> cell_2   0   1   0   0
-#> cell_3   0   1   0   0
 head(example_metadata, 3)
-#>   quality batch  sample expr_A expr_B
-#> 1    high     3  cell_5    700     10
-#> 2     low     1 cell_10    900      9
-#> 3    high     1  cell_1    951      7
 
 ## To be sure we can order both dataframes.
 ## Single cell clustering- and meta-data should be ordered by default already.
@@ -92,13 +87,10 @@ example_data <- cbind(example_metadata[order(example_metadata$sample),],
 ## Update rownames, numbering is obscurred in this example by the order function
 rownames(example_data) <- seq_len(nrow(example_data))
 head(example_data, 3)
-#>   quality batch  sample expr_A expr_B 0.1 0.2 0.3 0.4
-#> 1    high     1  cell_1    951      7   0   1   0   3
-#> 2     low     1 cell_10    900      9   0   0   2   3
-#> 3  medium     2  cell_2    210      7   0   1   0   0
 ```
 
-``` r
+
+```{r A basic MRCO run}
 ### Load MRCO
 library(MRCO)
 
@@ -107,46 +99,20 @@ library(MRCO)
 ### Lowest resolution clustering has one cluster and the highest resolution 4.
 ### This example could be the result of 4 k-mers clusterings with k = 1,2,3,4.
 MRCO(example_clustering)
-#> Arguments prefix and suffix are highly suggested! Please make sure that MRCO can identify each clustering resolution column.
-```
-
-<img src="man/figures/README-A basic MRCO run-1.png" width="100%" />
-
-``` r
 
 ### MRCO is verbose when it comes to warnings. We can also use our merged data. 
 ### Missing inputs prefix and/or suffix to target clustering result columns.
 MRCO(example_data, prefix = "0.")
-```
-
-<img src="man/figures/README-A basic MRCO run-2.png" width="100%" />
-
-``` r
 
 ### We can plot metadata variables as piecharts and see how samples cluster.
 MRCO(example_data, metadata_column_name = "quality",prefix = "0.")
-```
-
-<img src="man/figures/README-A basic MRCO run-3.png" width="100%" />
-
-``` r
 ### The example data shows no clear seperation based on sample quality, good sign.
 
 MRCO(example_data, metadata_column_name = "expr_A",prefix = "0.")
-```
-
-<img src="man/figures/README-A basic MRCO run-4.png" width="100%" />
-
-``` r
 ### Example A: graph hints that cluster 3 at resolution step 4 (4_3);
 ### is split based on expression values of A. (All samples in 4_3 have high values of A)
 
 MRCO(example_data, metadata_column_name = "expr_B",prefix = "0.")
-```
-
-<img src="man/figures/README-A basic MRCO run-5.png" width="100%" />
-
-``` r
 ### Example B: graph hints that lefthand clusters have rather high-;
 ### while lefthand have rather low- values of B.
 
@@ -163,21 +129,12 @@ MRCO(example_data, metadata_column_name = "expr_B",prefix = "0.")
 MRCO_clustering <- MRCO(example_data, prefix = "0.", 
      nodes_selection = c("4_3","2_0","2_1"),
      merge_downwards = FALSE)
-```
-
-<img src="man/figures/README-A basic MRCO run-6.png" width="100%" />
-
-``` r
 
 ### MRCO highlights selected clusters visually. 
 ### Each sample now has a unique cluster number composed of 'resolution'_'cluster'.
 head(MRCO_clustering$nodes_selected$cells_NonGlobalClustering,3)
-#>   cell  id
-#> 1    1 4_3
-#> 2    2 4_3
-#> 3    3 2_1
 table(MRCO_clustering$nodes_selected$cells_NonGlobalClustering$id)
-#> 
-#> 2_0 2_1 4_3 
-#>   5   3   2
+
 ```
+
+

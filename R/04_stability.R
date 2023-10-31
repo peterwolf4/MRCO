@@ -19,7 +19,7 @@
 #' @import tibble rlang dplyr
 #' @export
 
-cluster_stability_estimator_MRCO <- function(graph_layout,
+cluster_stability_estimator <- function(graph_layout,
                                         edges,
                                         branch_df,
                                         edge_ratio_weigth = .9,

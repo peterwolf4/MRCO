@@ -1,5 +1,5 @@
 
-#' Input checker NGCS
+#' Input checker MRCO
 #' @param metadata data.frame or tibble with dim-names: row names cell identities and column names cell level metadata variables
 #' @param metadata_column_name character or tidy-selection style unquoted name of a metadata column to plot piechart nodes from
 #' @param prefix character, prefix of metadata columns which contain the increments of resolution
@@ -29,7 +29,7 @@
 #' @param highlight_selection logical, TRUE to highlight selected nodes
 #' @import tibble rlang dplyr
 #'
-input_checker_NGCS <- function(
+input_checker_MRCO <- function(
     metadata = NULL,
     metadata_column_name = NULL,
     prefix = NULL, suffix = NULL,
@@ -72,14 +72,17 @@ input_checker_NGCS <- function(
                                         such as cellname or batch.")
 
 
+  #Test if metadata has a column named cell
+  if (any(colnames(metadata) == "cell")){
+    warning("Metadata contains a column named 'cell'.
+            Column dropped because variable name is reserved for internal purposes.
+            If you require the variable cell to be plotted please rename it.")
+    metadata <- metadata %>% select(-"cell")
+    }
 
   #Extract from metadata rows must not result in NULL
   if (is.null(rownames(metadata))){
-    # if (warnings) {
-    #   warning("No rownames in metadata detected, recommendet is giving metadata with exact cell ids as rownames to ensure data safety.")
-    # }
     metadata <- metadata %>% mutate("cell" = seq_len(nrow(metadata)))
-
   } else {
     # if rownames are present
     metadata <- metadata %>% tibble::rownames_to_column(var = "cell")
@@ -105,7 +108,7 @@ input_checker_NGCS <- function(
 
   #check prefix & suffix
   if (is.null(prefix) & is.null(suffix)){
-    if (!silent) message("Arguments prefix and suffix are highly suggested! Please make sure that NGCS can identify each clustering resolution column.")
+    if (!silent) message("Arguments prefix and suffix are highly suggested! Please make sure that MRCO can identify each clustering resolution column.")
   }
   metadata_colnames <- colnames(metadata)
   if (!is.null(prefix)) {
@@ -163,7 +166,7 @@ input_checker_NGCS <- function(
         if (metadata_unique_val_n <= 6) {
           metadata_column_nbins <- metadata_unique_val_n
         } else {
-          metadata_column_nbins <- 6
+          metadata_column_nbins <- 4
         }
       } else {
         #keep metadata_column_nbins NULL incase argument is unused due to metadata_column class
