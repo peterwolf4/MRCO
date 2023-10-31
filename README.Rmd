@@ -152,4 +152,9 @@ head(MRCO_clustering$nodes_selected$cells_NonGlobalClustering, 3)
 
 ```
 
+## Disclaimer
+Package is currently in development. Planned for release on bioconductor. 
+Good & reliable single cell clustering results have already been found. 
+Do use at your own caution though! Feel free to reach out regarding bugs and ideas.
+
 
