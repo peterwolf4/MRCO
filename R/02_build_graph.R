@@ -7,7 +7,7 @@
 #' @param metadata_column_nbins NULL, "all" or a numeric, set the number of bins to create from given metadata column if it is continuous data
 #' @param silent logical, FALSE to suppress messages and warnings
 #' @param igraph_layout_type character giving the igraph layout type for graph creation; either "tree" or "sugiyama"
-#'
+#' @param warnings logical, FALSE to supress warnings
 #' @import tibble rlang dplyr
 
 build_graph_MRCO <- function(cm,
@@ -88,16 +88,16 @@ build_graph_MRCO <- function(cm,
 
       tmp_metadata <- metadata %>%
         select(!!metadata_column_name,"cell") %>%
-        mutate(metadata_labels = cut(.data[[!!metadata_column_name]],
+        mutate("metadata_labels" = cut(.data[[!!metadata_column_name]],
                                      breaks = metadata_column_nbins),
-               !!metadata_column_name := dense_rank(metadata_labels))
+               !!metadata_column_name := dense_rank(.data$metadata_labels))
 
 
     } else {
       #add grouping var, in this scenario redundant
       tmp_metadata <- metadata %>%
         select(!!metadata_column_name,"cell") %>%
-        mutate(metadata_labels = !!metadata_column_name)
+        mutate("metadata_labels" = !!metadata_column_name)
     }
 
     metadata_cell <- nodes_cell %>%
@@ -148,10 +148,10 @@ create_transtion_matrix_MRCO <- function(cm = cm,
     pivot_longer(cols = c(everything(),-"cell"),
                  names_to = "resolution",
                  values_to = "cluster") %>%
-    mutate("from" = str_c(resolution,cluster, sep  = "_")) %>%
+    mutate("from" = str_c(.data$resolution,.data$cluster, sep  = "_")) %>%
     group_by("cell") %>%
     mutate("to" = lead(.data$from)) %>%
-    group_by(from, to) %>%
+    group_by(.data$from, .data$to) %>%
     summarise("e_size" = n())
 
   #estimate edge size and proportions
@@ -165,7 +165,8 @@ create_transtion_matrix_MRCO <- function(cm = cm,
                  dplyr::rename("Nsize_n" = "n_size") %>%
                  select("id", "Nsize_n"),
                by = c("to" = "id")) %>%
-    mutate("e_prop_size" = (e_size/(2*Nsize_n))+(e_size/(2*Nsize_p))) %>%
+    mutate("e_prop_size" = (.data$e_size/(2*.data$Nsize_n))+
+               (.data$e_size/(2*.data$Nsize_p))) %>%
     group_by(.data$to) %>%
     mutate("is_core" = .data$e_prop_size == max(.data$e_prop_size)) %>%
     select(-"Nsize_p", -"Nsize_n")
@@ -191,14 +192,13 @@ check_unique_x_positions_MRCO <- function(graph_layout = graph_layout,
   # correct each x by their cumsum/10000 to not change graph appearance
   # by minimal shifted value x is usable as group for each continuous stretch of nodes
   graph_fixed <- graph_layout %>%
-    # select(x,resolution,id) %>%
     group_by(.data$x) %>%
-    arrange(resolution) %>%
-    mutate("diff" = resolution-lag(resolution),
-           "fix_break" = if_else(is.na(diff) | diff == 1, FALSE,TRUE),
-           "break_groups" = cumsum(fix_break)) %>%
+    arrange(.data$resolution) %>%
+    mutate("diff" = .data$resolution-lag(.data$resolution),
+           "fix_break" = if_else(is.na(.data$diff) | .data$diff == 1, FALSE,TRUE),
+           "break_groups" = cumsum(.data$fix_break)) %>%
     group_by(.data$x, .data$break_groups) %>%
-    mutate(x = x+(break_groups/10000))
+    mutate("x" = .data$x+(.data$break_groups/10000))
 
   #update the fixed x coordinates
   graph_layout$x <- graph_fixed$x

@@ -42,7 +42,7 @@ devtools::install_github("peterwolf4/MRCO")
 # Example
 
 
-```{r example data}
+```{r example_data}
 
 # Create Example dataframe
 
@@ -89,7 +89,7 @@ head(example_data, 3)
 ```
 
 
-```{r A basic MRCO run}
+```{r A run_MRCO}
 # Load MRCO
 library(MRCO)
 
@@ -105,7 +105,7 @@ MRCO(example_data, prefix = "0.")
 
 # We can plot metadata variables as piecharts and see how samples cluster.
 MRCO(example_data, metadata_column_name = "quality",prefix = "0.")
-# The example data shows no clear seperation based on sample quality, good sign.
+# The example data shows no clear seperation based on sample quality.
 
 MRCO(example_data, metadata_column_name = "expr_A",prefix = "0.")
 # Example A: graph hints that cluster 3 at resolution step 4 (4_3);

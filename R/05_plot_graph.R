@@ -17,7 +17,7 @@ plot_graph_NGCS <- function(
     graph_arc,
     edge_num_size_filter,
     edge_prop_size_filter,
-    highlight_selection = T,
+    highlight_selection = TRUE,
     plot_col_gradient,
     no_labels
 
@@ -50,11 +50,11 @@ plot_graph_NGCS <- function(
                          , show.legend = c("alpha" = TRUE, "colour" = FALSE))+
       scale_edge_alpha(name = "Edge Size prop")
 
-    if (highlight_selection & any(graph_layout$is_selected == T) ) {
+    if (highlight_selection & any(graph_layout$is_selected == TRUE) ) {
       plot_simplenode <- plot_simplenode +
-      geom_node_point(aes(colour =  n_psize,
-                          size = is_selected,
-                      alpha = is_selected))+
+      geom_node_point(aes(colour =  .data$n_psize,
+                          size = .data$is_selected,
+                      alpha = .data$is_selected))+
         scale_size_manual(name = "Is Selected",
                           values = c("TRUE" = 6, "FALSE" = 4),
                           guide = "none")+
@@ -64,7 +64,7 @@ plot_graph_NGCS <- function(
 
     } else {
       plot_simplenode <- plot_simplenode +
-        geom_node_point(aes(colour =  n_psize)
+        geom_node_point(aes(colour =  .data$n_psize)
                         , size = 5
                         )
     }
@@ -103,7 +103,7 @@ plot_graph_NGCS <- function(
                        size = 13/.pt)+
         geom_node_text(aes(label = .data$cluster,
                            fontface = "bold",
-                           colour = is_selected),
+                           colour = .data$is_selected),
                        position = "identity")+
         scale_color_manual(name = "Is Selected",
                            values = c("TRUE" = "white",
@@ -135,17 +135,17 @@ plot_graph_NGCS <- function(
 
 
 
-    if (highlight_selection & any(graph_layout$is_selected == T)){
+    if (highlight_selection & any(graph_layout$is_selected == TRUE)){
       if (plot_col_gradient){
         #plot value of metadata column as is & highlight selected nodes
         plot_piechart <- plot_piechart +
           geom_node_arc_bar(aes(x0 = .data$x , y0 = .data$y,
                                 r0 = 0,
-                                r = if_else(is_selected,.5,.3),
+                                r = if_else(.data$is_selected,.5,.3),
                                 start = .data$start*2*pi,
                                 end = ((.data$end)*2)*pi,
                                 fill = {{metadata_column_name}},
-                                alpha = is_selected),
+                                alpha = .data$is_selected),
                             data = graph_arc)+
           scale_alpha_manual(name = "Is Selected",
                              values = c("TRUE" = 1,"FALSE" = .25),
@@ -155,11 +155,11 @@ plot_graph_NGCS <- function(
         plot_piechart <- plot_piechart +
           geom_node_arc_bar(aes(x0 = .data$x , y0 = .data$y,
                                 r0 = 0,
-                                r = if_else(is_selected,.5,.3),
+                                r = if_else(.data$is_selected,.5,.3),
                                 start = .data$start*2*pi,
                                 end = ((.data$end)*2)*pi,
                                 fill = as.character({{metadata_column_name}}),
-                                alpha = is_selected),
+                                alpha = .data$is_selected),
                             data = graph_arc)+
           scale_alpha_manual(name = "Is Selected",
                              values = c("TRUE" = 1,"FALSE" = .25),
@@ -194,13 +194,13 @@ plot_graph_NGCS <- function(
     if (plot_col_gradient){
       plot_piechart <- plot_piechart+
       scale_fill_viridis(name = rlang::as_string({{metadata_column_name}}),
-                         labels = dplyr::pull(graph_arc, metadata_labels) %>% base::as.character(),
+                         labels = dplyr::pull(graph_arc, .data$metadata_labels) %>% base::as.character(),
                          breaks = dplyr::pull(graph_arc, !!metadata_column_name),
                          discrete = FALSE)
     } else {
       plot_piechart <- plot_piechart+
       scale_fill_viridis(name = rlang::as_string({{metadata_column_name}}),
-                         labels = dplyr::pull(graph_arc, metadata_labels) %>% base::as.character(),
+                         labels = dplyr::pull(graph_arc, .data$metadata_labels) %>% base::as.character(),
                          breaks = dplyr::pull(graph_arc, !!metadata_column_name),
                          discrete = TRUE)
     }
@@ -240,7 +240,7 @@ plot_graph_NGCS <- function(
                        size = 13/.pt)+
         geom_node_text(aes(label = .data$cluster,
                            fontface = "bold",
-                           colour = is_selected),
+                           colour = .data$is_selected),
                        position = "identity")+
         scale_color_manual(name = "Is Selected",
                            values = c("TRUE" = "white",

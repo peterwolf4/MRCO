@@ -4,14 +4,10 @@
 #' @param metadata_column_name character or tidy-selection style unquoted name of a metadata column to plot piechart nodes from
 #' @param prefix character, prefix of metadata columns which contain the increments of resolution
 #' @param suffix character, suffix of metadata columns which contain the increments of resolution
-#' @param cellnames_column_name Optional NULL, character or name of a column containing ceell names in metadata
 #' @param metadata_column_nbins NULL, "all" or a numeric, set the number of bins to create from given metadata column if it is continuous data
 #' @param plot_col_gradient NULL for auto detect, or logical, TRUE to use continuous fill, FALSE for discrete fill; only applies when continuous metadata column is selected
 
-#' @param count_matrix UPDATE sparseMatrix or other matrix forms, UPDATE which exactly, containing the counts used for cluster_Scatter calculation
-#' @param cluster_scatter_matrix UPDATE sparseMatrix or other matrix forms, UPDATE which exactly, containing calculated cluster scatter for each cluster found in metadata
 #' @param suggest_cut logical, TRUE to suggest stable nodes based on graph structure, FALSE to skip
-#' @param reduce_branchlist logical, TRUE to walk as few paths as possible while still visiting every node, FALSE to walk any possible path passing the edge_filters; warning memory expensive, adjust branches_overflow parameter! Only relevant if suggest_cut is TRUE.
 #' @param edge_num_size_filter numeric, give the number of cells that must be surpassed to draw edge, has to be set for each data set as its highly dependent on nr of cells within data
 #' @param edge_prop_size_filter numeric, give the proportion of cells that must move between nodes to draw edge
 
@@ -36,10 +32,8 @@ input_checker_MRCO <- function(
     metadata_column_nbins = NULL,
     plot_col_gradient = NULL,
 
-    # count_matrix = NULL,
-    # cluster_scatter_matrix = NULL,
     suggest_cut = NULL,
-    reduce_branchlist = NULL,
+    # reduce_branchlist = NULL,
     edge_num_size_filter = NULL,
     edge_prop_size_filter = NULL,
     #
@@ -138,7 +132,7 @@ input_checker_MRCO <- function(
     dplyr::select(c(all_of(i_select),-"cell")) %>%
     base::as.data.frame()
   colnames(cm) <- seq_len(ncol(cm))
-  rownames(cm) <- metadata %>% pull(cell)
+  rownames(cm) <- metadata %>% pull(.data$cell)
 
   #save changed input vars
   return_vars$cm <- cm
@@ -231,7 +225,7 @@ input_checker_MRCO <- function(
 
   ##Other Arguments, Simple Checks
   if (!(class(suggest_cut) %in% c("logical"))) stop("Expected input class for suggest_cut is logical.")
-  if (!(class(reduce_branchlist) %in% c("logical"))) stop("Expected input class for reduce_branchlist is logical.")
+  # if (!(class(reduce_branchlist) %in% c("logical"))) stop("Expected input class for reduce_branchlist is logical.")
   if (!(class(merge_downwards) %in% c("logical"))) stop("Expected input class for merge_downwards is logical.")
   if (!(class(silent) %in% c("logical"))) stop("Expected input class for silent is logical.")
   if (!(class(warnings) %in% c("logical"))) stop("Expected input class for warnings is logical.")
@@ -242,7 +236,7 @@ input_checker_MRCO <- function(
   if (is.list(nodes_selection)){
     res_names <- names(nodes_selection)
     id_selected <- c()
-    for (l in 1:length(nodes_selection)){
+    for (l in seq_along(nodes_selection)){
       id_selected <- c(id_selected,paste(res_names[l],nodes_selection[[l]], sep = "_"))
     }#end for loop
     nodes_selection <- id_selected

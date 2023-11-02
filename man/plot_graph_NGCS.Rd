@@ -10,7 +10,7 @@ plot_graph_NGCS(
   graph_arc,
   edge_num_size_filter,
   edge_prop_size_filter,
-  highlight_selection = T,
+  highlight_selection = TRUE,
   plot_col_gradient,
   no_labels
 )

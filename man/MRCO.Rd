@@ -12,7 +12,6 @@ MRCO(
   metadata_column_nbins = NULL,
   plot_col_gradient = NULL,
   suggest_cut = FALSE,
-  reduce_branchlist = TRUE,
   edge_num_size_filter = 0,
   edge_prop_size_filter = 0.05,
   branches_overflow = 50000,
@@ -41,8 +40,6 @@ MRCO(
 \item{plot_col_gradient}{NULL for auto detect, or logical, TRUE to use continuous fill, FALSE for discrete fill; only applies when continuous metadata column is selected}
 
 \item{suggest_cut}{logical, TRUE to suggest stable nodes based on graph structure, FALSE to skip}
-
-\item{reduce_branchlist}{logical, TRUE to walk as few paths as possible while still visiting every node, FALSE to walk any possible path passing the edge_filters; warning memory expensive, adjust branches_overflow parameter! Only relevant if suggest_cut is TRUE.}
 
 \item{edge_num_size_filter}{numeric, give the number of cells that must be surpassed to draw edge, has to be set for each data set as its highly dependent on nr of cells within data}
 

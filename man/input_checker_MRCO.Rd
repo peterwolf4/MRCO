@@ -12,7 +12,6 @@ input_checker_MRCO(
   metadata_column_nbins = NULL,
   plot_col_gradient = NULL,
   suggest_cut = NULL,
-  reduce_branchlist = NULL,
   edge_num_size_filter = NULL,
   edge_prop_size_filter = NULL,
   nodes_selection = NULL,
@@ -39,8 +38,6 @@ input_checker_MRCO(
 
 \item{suggest_cut}{logical, TRUE to suggest stable nodes based on graph structure, FALSE to skip}
 
-\item{reduce_branchlist}{logical, TRUE to walk as few paths as possible while still visiting every node, FALSE to walk any possible path passing the edge_filters; warning memory expensive, adjust branches_overflow parameter! Only relevant if suggest_cut is TRUE.}
-
 \item{edge_num_size_filter}{numeric, give the number of cells that must be surpassed to draw edge, has to be set for each data set as its highly dependent on nr of cells within data}
 
 \item{edge_prop_size_filter}{numeric, give the proportion of cells that must move between nodes to draw edge}
@@ -62,12 +59,6 @@ TRUE means that clusters are merged from top towards the bottom, hence cells wil
 \item{warnings}{logical, set to FALSE if warnings should not be printed to console.}
 
 \item{highlight_selection}{logical, TRUE to highlight selected nodes}
-
-\item{cellnames_column_name}{Optional NULL, character or name of a column containing ceell names in metadata}
-
-\item{count_matrix}{UPDATE sparseMatrix or other matrix forms, UPDATE which exactly, containing the counts used for cluster_Scatter calculation}
-
-\item{cluster_scatter_matrix}{UPDATE sparseMatrix or other matrix forms, UPDATE which exactly, containing calculated cluster scatter for each cluster found in metadata}
 }
 \description{
 Input checker MRCO

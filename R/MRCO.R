@@ -12,7 +12,6 @@
 #' @param plot_col_gradient NULL for auto detect, or logical, TRUE to use continuous fill, FALSE for discrete fill; only applies when continuous metadata column is selected
 
 #' @param suggest_cut logical, TRUE to suggest stable nodes based on graph structure, FALSE to skip
-#' @param reduce_branchlist logical, TRUE to walk as few paths as possible while still visiting every node, FALSE to walk any possible path passing the edge_filters; warning memory expensive, adjust branches_overflow parameter! Only relevant if suggest_cut is TRUE.
 #' @param edge_num_size_filter numeric, give the number of cells that must be surpassed to draw edge, has to be set for each data set as its highly dependent on nr of cells within data
 #' @param edge_prop_size_filter numeric, give the proportion of cells that must move between nodes to draw edge
 #' @param branches_overflow numeric giving the max number of paths through the graph that is checked for each resolution step to protect memory overflow
@@ -33,7 +32,7 @@
 #' @param edge_ratio_weigth numeric between 0 and 1, when stable edges are determined their edge ratio must be larger than the branch paths maximum edge ratio timed edge_ratio_weight.
 #' Therefore, a value closer to 1 is less permissive towards noise, whereas a value closer to 0 may handle noisier graphs better.
 
-#' @import dplyr tidyr tibble stringr tidygraph ggraph ggplot2 rlang ggnewscale
+#' @import dplyr tidyr tibble stringr tidygraph ggraph ggplot2 rlang ggnewscale methods
 
 #' @export
 
@@ -44,7 +43,7 @@ MRCO <- function(metadata = NULL,
                  plot_col_gradient = NULL,
 
                  suggest_cut = FALSE,
-                 reduce_branchlist = TRUE,
+                 # reduce_branchlist = TRUE,
                  edge_num_size_filter = 0,
                  edge_prop_size_filter = 0.05,
                  branches_overflow = 50000,
@@ -72,7 +71,7 @@ MRCO <- function(metadata = NULL,
     metadata_column_name  <- rlang::enexpr(metadata_column_name)
     #coerce columns names from character to symbol
     if (!is.null(metadata_column_name)){
-      if (class(metadata_column_name) == "character"){
+      if (is(metadata_column_name, "character")){
         metadata_column_name <- sym(metadata_column_name)
       }
     }
@@ -87,7 +86,7 @@ MRCO <- function(metadata = NULL,
     plot_col_gradient = plot_col_gradient,
 
     suggest_cut = suggest_cut,
-    reduce_branchlist = reduce_branchlist,
+    # reduce_branchlist = reduce_branchlist,
     edge_num_size_filter = edge_num_size_filter,
     edge_prop_size_filter = edge_prop_size_filter,
 
@@ -135,14 +134,8 @@ MRCO <- function(metadata = NULL,
   if (suggest_cut){
 
     #Create Branchlist
-    branch_df <- create_node_branch_list_bf_MRCO(graph_layout,
-                                            edges,
-                                            reduce = reduce_branchlist,
-                                            edge_num_size_filter = edge_num_size_filter,
-                                            edge_prop_size_filter = edge_prop_size_filter,
-                                            debugg = F, #deprecated argument
-                                            silent = silent,
-                                            branches_overflow = branches_overflow)
+    branch_df <- create_node_branch_list_MRCO(graph_layout,
+                                            edges)
     #Suggest stable clusters
     cluster_stability <- cluster_stability_estimator_MRCO(graph_layout = graph_layout,
                                                      edges = edges,
@@ -191,7 +184,7 @@ MRCO <- function(metadata = NULL,
   ###Plot Graphs-----
 
 
-  if (plot == T){
+  if (plot == TRUE){
     plot_list <- plot_graph_NGCS(metadata_column_name = metadata_column_name,
                   graph_layout = graph_layout,
                   graph_arc = graph_arc,
@@ -230,7 +223,7 @@ MRCO <- function(metadata = NULL,
 
 custom_node_selection <- function(nodes_cell, nodes_selection,
                                   cm,merge_downwards,
-                                  silent = T){
+                                  silent = TRUE){
 
 
   if (!all(nodes_selection %in% nodes_cell$id)) { stop("Given vector of nodes selection is not fully matching to available nodes.
@@ -249,13 +242,13 @@ custom_node_selection <- function(nodes_cell, nodes_selection,
   if (merge_downwards){
     cells_selection <- nodes_cell %>%
       filter(id %in% nodes_selection) %>%
-      group_by(cell) %>%
+      group_by(.data$cell) %>%
       slice_min(order_by = resolution,
                 n = 1, with_ties = FALSE)
   } else {
     cells_selection <- nodes_cell %>%
       filter(id %in% nodes_selection) %>%
-      group_by(cell) %>%
+      group_by(.data$cell) %>%
       slice_max(order_by = resolution,
                 n = 1, with_ties = FALSE)
   }

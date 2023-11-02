@@ -28,6 +28,8 @@ build_graph_MRCO(
 
 \item{silent}{logical, FALSE to suppress messages and warnings}
 
+\item{warnings}{logical, FALSE to supress warnings}
+
 \item{igraph_layout_type}{character giving the igraph layout type for graph creation; either "tree" or "sugiyama"}
 }
 \description{

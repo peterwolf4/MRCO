@@ -9,7 +9,7 @@ custom_node_selection(
   nodes_selection,
   cm,
   merge_downwards,
-  silent = T
+  silent = TRUE
 )
 }
 \arguments{
