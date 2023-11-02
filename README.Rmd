@@ -17,6 +17,9 @@ knitr::opts_chunk$set(
 **M**ulti **R**esolution **C**luster **O**ptimization
 <!-- badges: start -->
 <!-- badges: end -->
+```{r out.width = "100%" , fig.height=10, echo=FALSE}
+knitr::include_graphics("man/figures/Banner.png")
+```
 
 
 Visualize your clustering of multiple independently generated resolutions (or sensitivities) in a stacked tree like graph.
@@ -42,57 +45,37 @@ devtools::install_github("peterwolf4/MRCO")
 # Example
 
 
-```{r example_data}
+```{r load_example_data}
 
-# Create Example dataframe
+# Load MRCO
+library(MRCO)
+
+data("example_data")
+# Load Example dataframe
+
 
 # Required:
 # Dataframe or Matrix of samples (rows) and increasing clustering resolutions (columns).
 # In single cell this will be: cells (rows) and increasing clustering resolution (columns)
-
-example_clustering <- data.frame(row.names = paste0("cell_",seq(1,10,1)),
-                                  check.names = F , "0.1" = rep(0,10), 
-                                  "0.2" = c(rep(1,4), rep(0,6)), 
-                                  "0.3" = c(rep(0,4),rep(1,3), rep(2,3)),
-                                  "0.4" = c(3,rep(0,3), rep(1,3),2,2,3))
+# The provided example data has its clustering results saved from column 6 to 9.
+example_clustering <- example_data[,seq(6,9)]
+head(example_clustering)
 
 # Optional:
 # Extra metadata variables (columns) for your samples (rows). 
-# Variable can be continuous (automatically binned) or discrete. 
+# Variable can be continuous (automatically binned) or discrete.
+# Note that given metadata & clustering is arbitrary. 
+head(example_data[,seq(1,5)])
 
-# Setting the seed for reproducable sample results in this example.
 
-set.seed(1)
-
-# Creating example 
-example_metadata <- data.frame(
-                       "quality" = sample(c("high","medium","low"),10, T),
-                       "batch" = sample(c("1","2","3"),10, T),
-                       "sample" = sample(paste("cell",seq(1,10), sep = "_"), 10),
-                       "expr_A" = sample(seq(100,1000), 10, T),
-                       "expr_B" = sample(seq(1,10), 10, T))
-
-# Joining cluster results with metadata
-# **Be sure the order of your samples align**, in this example, they do not.
-
-head(example_clustering, 3)
-head(example_metadata, 3)
-
-# To be sure we can order both dataframes.
-# Single cell clustering- and meta-data should be ordered by default already.
-
-example_data <- cbind(example_metadata[order(example_metadata$sample),],
-                      example_clustering[order(rownames(example_clustering)),])
-# Update rownames, numbering is obscurred in this example by the order function
-rownames(example_data) <- seq_len(nrow(example_data))
-head(example_data, 3)
+# MRCO takes both clustering and metadata info as single dataframe input.
+# When merging clustering results and metadata manually verify that rows match!
+# A typical full input data looks like this:
+head(example_data)
 ```
 
 
-```{r A run_MRCO}
-# Load MRCO
-library(MRCO)
-
+```{r run_MRCO}
 # Running MRCO
 # We can run the function with just the clustering results:
 # Lowest resolution clustering has one cluster and the highest resolution 4.

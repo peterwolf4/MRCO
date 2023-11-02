@@ -1,0 +1,21 @@
+#' MRCO Example Data
+#'
+#' A small example dataset created using the sample() and rep() function.
+#' Contains arbitrary metadata and clustering results of four resolutions.
+#' This example data resembles running a k-means with k = 1,2,3,4 on 10 samples.
+#'
+#' @format ## `who`
+#' A data frame with 10 rows and 9 columns:
+#' \describe{
+#'   \item{quality}{character, Example Metadata representing sample quality.}
+#'   \item{batch}{character, Example Metadata representing sample batch.}
+#'   \item{sample}{character, Example Metadata representing sample id.}
+#'   \item{expr_A}{numeric, Example Metadata representing RNA expression values.}
+#'   \item{expr_B}{numeric, Example Metadata representing RNA expression values.}
+#'   \item{0.1}{numeric, Example clustering algorithm result of resolution 0.1.}
+#'   \item{0.2}{numeric, Example clustering algorithm result of resolution 0.2.}
+#'   \item{0.3}{numeric, Example clustering algorithm result of resolution 0.3.}
+#'   \item{0.4}{numeric, Example clustering algorithm result of resolution 0.4.}
+#'   }
+#' @source Sampled example from scratch to quickly introduce MRCO functionality.
+"example_data"

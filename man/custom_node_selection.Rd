@@ -2,7 +2,7 @@
 % Please edit documentation in R/MRCO.R
 \name{custom_node_selection}
 \alias{custom_node_selection}
-\title{Custom Node  Selection wNGCS}
+\title{Custom Node  Selection MRCO}
 \usage{
 custom_node_selection(
   nodes_cell,
@@ -28,5 +28,5 @@ TRUE means that clusters are merged from top towards the bottom, hence cells wil
 \item{silent}{logical, FALSE to suppress messages and warnings}
 }
 \description{
-Custom Node  Selection wNGCS
+Custom Node  Selection MRCO
 }

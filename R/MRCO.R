@@ -64,7 +64,7 @@ MRCO <- function(metadata = NULL,
 
   ###Check Function Input-----
 
-  #initiate NGCS return value list
+  #initiate MRCO return value list
   return_list <- list()
   #capture user given columns
   {
@@ -185,7 +185,7 @@ MRCO <- function(metadata = NULL,
 
 
   if (plot == TRUE){
-    plot_list <- plot_graph_NGCS(metadata_column_name = metadata_column_name,
+    plot_list <- plot_graph_MRCO(metadata_column_name = metadata_column_name,
                   graph_layout = graph_layout,
                   graph_arc = graph_arc,
                   edge_num_size_filter = edge_num_size_filter,
@@ -208,7 +208,7 @@ MRCO <- function(metadata = NULL,
 
 
 
-#' Custom Node  Selection wNGCS
+#' Custom Node  Selection MRCO
 #' @param nodes_cell tibble of unique nodes, meaning for each resolution each cluster
 #' @param cm cluster matrix to match outputs row order
 #' @param nodes_selection vector or list, two ways to manually select a node by its global id from the graph:

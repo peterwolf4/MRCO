@@ -11,7 +11,7 @@
 #' @import ggplot2 ggnewscale dplyr tidygraph ggraph
 
 
-plot_graph_NGCS <- function(
+plot_graph_MRCO <- function(
     metadata_column_name,
     graph_layout,
     graph_arc,
@@ -190,18 +190,25 @@ plot_graph_NGCS <- function(
 
     }
 
+
     #incase numerical values are used, scale fill continuouse
     if (plot_col_gradient){
       plot_piechart <- plot_piechart+
       scale_fill_viridis(name = rlang::as_string({{metadata_column_name}}),
-                         labels = dplyr::pull(graph_arc, .data$metadata_labels) %>% base::as.character(),
-                         breaks = dplyr::pull(graph_arc, !!metadata_column_name),
+                         labels = graph_arc$metadata_labels %>%
+                             base::as.character() %>%
+                             unique(),
+                         breaks = dplyr::pull(graph_arc, !!metadata_column_name) %>%
+                         unique(),
                          discrete = FALSE)
     } else {
       plot_piechart <- plot_piechart+
       scale_fill_viridis(name = rlang::as_string({{metadata_column_name}}),
-                         labels = dplyr::pull(graph_arc, .data$metadata_labels) %>% base::as.character(),
-                         breaks = dplyr::pull(graph_arc, !!metadata_column_name),
+                         labels = graph_arc$metadata_labels %>%
+                             base::as.character() %>%
+                             unique(),
+                         breaks = dplyr::pull(graph_arc, !!metadata_column_name) %>%
+                             unique(),
                          discrete = TRUE)
     }
 
@@ -249,7 +256,6 @@ plot_graph_NGCS <- function(
         coord_fixed()+
         aes_list$theme
     }
-
 
     plot(plot_piechart)
     return_list$plot_node_tree <- plot_piechart

@@ -5,6 +5,7 @@
 
 **M**ulti **R**esolution **C**luster **O**ptimization
 <!-- badges: start --> <!-- badges: end -->
+<img src="man/figures/Banner.png" width="100%" />
 
 Visualize your clustering of multiple independently generated
 resolutions (or sensitivities) in a stacked tree like graph. It shows if
@@ -40,66 +41,55 @@ devtools::install_github("peterwolf4/MRCO")
 
 ``` r
 
-# Create Example dataframe
+# Load MRCO
+library(MRCO)
+
+data("example_data")
+# Load Example dataframe
+
 
 # Required:
 # Dataframe or Matrix of samples (rows) and increasing clustering resolutions (columns).
 # In single cell this will be: cells (rows) and increasing clustering resolution (columns)
-
-example_clustering <- data.frame(row.names = paste0("cell_",seq(1,10,1)),
-                                  check.names = F , "0.1" = rep(0,10), 
-                                  "0.2" = c(rep(1,4), rep(0,6)), 
-                                  "0.3" = c(rep(0,4),rep(1,3), rep(2,3)),
-                                  "0.4" = c(3,rep(0,3), rep(1,3),2,2,3))
+# The provided example data has its clustering results saved from column 6 to 9.
+example_clustering <- example_data[,seq(6,9)]
+head(example_clustering)
+#>   0.1 0.2 0.3 0.4
+#> 1   0   1   0   3
+#> 2   0   0   2   3
+#> 3   0   1   0   0
+#> 4   0   1   0   0
+#> 5   0   1   0   0
+#> 6   0   0   1   1
 
 # Optional:
 # Extra metadata variables (columns) for your samples (rows). 
-# Variable can be continuous (automatically binned) or discrete. 
-
-# Setting the seed for reproducable sample results in this example.
-
-set.seed(1)
-
-# Creating example 
-example_metadata <- data.frame(
-                       "quality" = sample(c("high","medium","low"),10, T),
-                       "batch" = sample(c("1","2","3"),10, T),
-                       "sample" = sample(paste("cell",seq(1,10), sep = "_"), 10),
-                       "expr_A" = sample(seq(100,1000), 10, T),
-                       "expr_B" = sample(seq(1,10), 10, T))
-
-# Joining cluster results with metadata
-# **Be sure the order of your samples align**, in this example, they do not.
-
-head(example_clustering, 3)
-#>        0.1 0.2 0.3 0.4
-#> cell_1   0   1   0   3
-#> cell_2   0   1   0   0
-#> cell_3   0   1   0   0
-head(example_metadata, 3)
+# Variable can be continuous (automatically binned) or discrete.
+# Note that given metadata & clustering is arbitrary. 
+head(example_data[,seq(1,5)])
 #>   quality batch  sample expr_A expr_B
-#> 1    high     3  cell_5    700     10
+#> 1    high     1  cell_1    951      7
 #> 2     low     1 cell_10    900      9
-#> 3    high     1  cell_1    951      7
+#> 3  medium     2  cell_2    210      7
+#> 4  medium     3  cell_3    503      8
+#> 5     low     1  cell_4    631      6
+#> 6    high     3  cell_5    700     10
 
-# To be sure we can order both dataframes.
-# Single cell clustering- and meta-data should be ordered by default already.
 
-example_data <- cbind(example_metadata[order(example_metadata$sample),],
-                      example_clustering[order(rownames(example_clustering)),])
-# Update rownames, numbering is obscurred in this example by the order function
-rownames(example_data) <- seq_len(nrow(example_data))
-head(example_data, 3)
+# MRCO takes both clustering and metadata info as single dataframe input.
+# When merging clustering results and metadata manually verify that rows match!
+# A typical full input data looks like this:
+head(example_data)
 #>   quality batch  sample expr_A expr_B 0.1 0.2 0.3 0.4
 #> 1    high     1  cell_1    951      7   0   1   0   3
 #> 2     low     1 cell_10    900      9   0   0   2   3
 #> 3  medium     2  cell_2    210      7   0   1   0   0
+#> 4  medium     3  cell_3    503      8   0   1   0   0
+#> 5     low     1  cell_4    631      6   0   1   0   0
+#> 6    high     3  cell_5    700     10   0   0   1   1
 ```
 
 ``` r
-# Load MRCO
-library(MRCO)
-
 # Running MRCO
 # We can run the function with just the clustering results:
 # Lowest resolution clustering has one cluster and the highest resolution 4.
@@ -108,7 +98,7 @@ MRCO(example_clustering)
 #> Arguments prefix and suffix are highly suggested! Please make sure that MRCO can identify each clustering resolution column.
 ```
 
-<img src="man/figures/README-A run_MRCO-1.png" width="75%" />
+<img src="man/figures/README-run_MRCO-1.png" width="75%" />
 
 ``` r
 
@@ -117,7 +107,7 @@ MRCO(example_clustering)
 MRCO(example_data, prefix = "0.")
 ```
 
-<img src="man/figures/README-A run_MRCO-2.png" width="75%" />
+<img src="man/figures/README-run_MRCO-2.png" width="75%" />
 
 ``` r
 
@@ -125,7 +115,7 @@ MRCO(example_data, prefix = "0.")
 MRCO(example_data, metadata_column_name = "quality",prefix = "0.")
 ```
 
-<img src="man/figures/README-A run_MRCO-3.png" width="75%" />
+<img src="man/figures/README-run_MRCO-3.png" width="75%" />
 
 ``` r
 # The example data shows no clear seperation based on sample quality.
@@ -133,7 +123,7 @@ MRCO(example_data, metadata_column_name = "quality",prefix = "0.")
 MRCO(example_data, metadata_column_name = "expr_A",prefix = "0.")
 ```
 
-<img src="man/figures/README-A run_MRCO-4.png" width="75%" />
+<img src="man/figures/README-run_MRCO-4.png" width="75%" />
 
 ``` r
 # Example A: graph hints that cluster 3 at resolution step 4 (4_3);
@@ -142,7 +132,7 @@ MRCO(example_data, metadata_column_name = "expr_A",prefix = "0.")
 MRCO(example_data, metadata_column_name = "expr_B",prefix = "0.")
 ```
 
-<img src="man/figures/README-A run_MRCO-5.png" width="75%" />
+<img src="man/figures/README-run_MRCO-5.png" width="75%" />
 
 ``` r
 # Example B: graph hints that lefthand clusters have rather high-;
@@ -163,7 +153,7 @@ MRCO_clustering <- MRCO(example_data, prefix = "0.",
      merge_downwards = FALSE)
 ```
 
-<img src="man/figures/README-A run_MRCO-6.png" width="75%" />
+<img src="man/figures/README-run_MRCO-6.png" width="75%" />
 
 ``` r
 
@@ -186,7 +176,7 @@ table(MRCO_clustering$nodes_selected$cells_NonGlobalClustering$id)
 MRCO_clustering <- MRCO(example_data, prefix = "0.", suggest_cut = TRUE)
 ```
 
-<img src="man/figures/README-A run_MRCO-7.png" width="75%" />
+<img src="man/figures/README-run_MRCO-7.png" width="75%" />
 
 ``` r
 
