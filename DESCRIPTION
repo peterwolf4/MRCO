@@ -17,6 +17,7 @@ Suggests:
 VignetteBuilder: knitr
 Imports:
     methods,
+    utils,
     stats,
     dplyr,
     tibble,
@@ -30,4 +31,6 @@ Imports:
 Config/testthat/edition: 3
 Depends: 
     R (>= 4.1.0)
-LazyData: true
+LazyData: false
+URL:https://github.com/peterwolf4/MRCO
+BugReports:https://github.com/peterwolf4/MRCO/issues

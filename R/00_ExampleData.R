@@ -4,7 +4,7 @@
 #' Contains arbitrary metadata and clustering results of four resolutions.
 #' This example data resembles running a k-means with k = 1,2,3,4 on 10 samples.
 #'
-#' @format ## `who`
+#' @format ## `MRCO Example Data`
 #' A data frame with 10 rows and 9 columns:
 #' \describe{
 #'   \item{quality}{character, Example Metadata representing sample quality.}
@@ -18,4 +18,6 @@
 #'   \item{0.4}{numeric, Example clustering algorithm result of resolution 0.4.}
 #'   }
 #' @source Sampled example from scratch to quickly introduce MRCO functionality.
+#' @usage data("example_data")
+#' @importFrom utils data
 "example_data"

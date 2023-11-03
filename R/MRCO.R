@@ -31,9 +31,10 @@
 #' @param igraph_layout_type character giving the igraph layout type for graph creation; either "tree" or "sugiyama"
 #' @param edge_ratio_weigth numeric between 0 and 1, when stable edges are determined their edge ratio must be larger than the branch paths maximum edge ratio timed edge_ratio_weight.
 #' Therefore, a value closer to 1 is less permissive towards noise, whereas a value closer to 0 may handle noisier graphs better.
-
+#' @returns list, contains the graph layout. May contain selected nodes, the resulting clustering and the ggplot object if respective functions are used.
+#' @example man/examples/MRCO_example.R
 #' @import dplyr tidyr tibble stringr tidygraph ggraph ggplot2 rlang ggnewscale methods
-
+#' @importFrom utils data head
 #' @export
 
 MRCO <- function(metadata = NULL,
@@ -167,7 +168,8 @@ MRCO <- function(metadata = NULL,
                                             cm = cm,
                                             nodes_selection = nodes_selection,
                                             merge_downwards = merge_downwards)
-    return_list$nodes_selected <- nodes_selected
+    return_list$selected_nodes <- nodes_selected$selected_nodes
+    return_list$MRCO_clustering <- nodes_selected$MRCO_clustering
   }
 
 
@@ -195,9 +197,8 @@ MRCO <- function(metadata = NULL,
                   no_labels = no_labels)
 
     plot_list$plot_node_tree
-  return_list$plot_node_tree <- plot_list$plot_node_tree
+  return_list$plot <- plot_list$plot_node_tree
  }
-
 
   return(invisible(return_list))
 }
@@ -271,8 +272,8 @@ custom_node_selection <- function(nodes_cell, nodes_selection,
     warning("Exceptional Warning: Rownames do not match input metadata, please report this bug and do not use results for your analysis!")
   }
 
-  return_vals <- list("nodes_selection" = nodes_selection,
-                      "cells_NonGlobalClustering" = cells_assignment)
+  return_vals <- list("selected_nodes" = nodes_selection,
+                      "MRCO_clustering" = cells_assignment)
 
   return(return_vals)
 }

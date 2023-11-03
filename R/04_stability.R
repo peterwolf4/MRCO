@@ -67,11 +67,11 @@ cluster_stability_estimator_MRCO <- function(graph_layout,
   return_seq_class <- function(X){
     diff_x <- diff(X)
     return_v <- vector(mode = "numeric", length = length(X))
-    class_count = 1
-    return_v[1] = 1
+    class_count <-  1
+    return_v[1] <-  1
     for (i in seq_along(diff_x)) {
       if (diff_x[i] == 1) {return_v[i+1] <- class_count}
-      if (diff_x[i] != 1) {class_count = class_count+1
+      if (diff_x[i] != 1) {class_count <-  class_count+1
         return_v[i+1] <- class_count}
     }
     return(return_v)

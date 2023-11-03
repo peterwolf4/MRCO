@@ -124,6 +124,9 @@ input_checker_MRCO <- function(
   i_select <- which(i_prefix & i_suffix)
   if (!any(i_select)) stop("
   No columns detected in metadata with given prefix and suffix.")
+  if (length(i_select) == 1) {
+      warning("Only a single resolution step found. Check input data or prefix?")
+  }
 
 
 

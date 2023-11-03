@@ -5,7 +5,7 @@
 \alias{example_data}
 \title{MRCO Example Data}
 \format{
-## `who`
+## `MRCO Example Data`
 A data frame with 10 rows and 9 columns:
 \describe{
   \item{quality}{character, Example Metadata representing sample quality.}
@@ -23,7 +23,7 @@ A data frame with 10 rows and 9 columns:
 Sampled example from scratch to quickly introduce MRCO functionality.
 }
 \usage{
-example_data
+data("example_data")
 }
 \description{
 A small example dataset created using the sample() and rep() function.

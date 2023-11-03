@@ -70,11 +70,39 @@ TRUE means that clusters are merged from top towards the bottom, hence cells wil
 \item{edge_ratio_weigth}{numeric between 0 and 1, when stable edges are determined their edge ratio must be larger than the branch paths maximum edge ratio timed edge_ratio_weight.
 Therefore, a value closer to 1 is less permissive towards noise, whereas a value closer to 0 may handle noisier graphs better.}
 }
+\value{
+list, contains the graph layout. May contain selected nodes, the resulting clustering and the ggplot object if respective functions are used.
+}
 \description{
 MRCO visualizes clustering results of different resolutions in a treelike graph to directly show differences in sample compositions and give an intuitive solution to choosing the best amount of clusters for your experiment.
 MRCO uses multiple initial clusterings of any algorithm which were individually created iterating though some form of a resolution tuning parameter.
 Next to the clustering resolutions, metadata may also contain columns regarding other sample level information that might help evaluation on whether or not sub-clustering of a certain cluster is necessary or not.
 Additionally to the build in automated stable cluster suggestion one can choose to select clusters manually to easily receive a custom clustering for downstream analysis.
+}
+\examples{
+if (requireNamespace("utils")){
+    data(example_data)
+    #Plot Clusters as Treelike Graph. Use the prefix to select clustering columns.
+    MRCO(example_data, prefix="0.")
+    # Piechart plot both discrete ...
+    MRCO(example_data, metadata_column_name="quality", prefix="0.")
+    # ... and continuous sample level metadata.
+    MRCO(example_data, "expr_A", prefix="0.")
+    # Select your clusters manually at wish.
+    # Each node is pasted by its resolution step (Y axis) and its cluster NR.
+    # The top node is called 0_1, the bottom leafs are 4_1, 4_2, 4_3, 4_0 etc.
+    # Either select by named list or character vector.
+    MRCO(example_data, "batch", prefix="0.",
+         nodes_selection=list("3"=c(1, 0),
+                              "4"=c(2, 3)))
+    MRCO_res <- MRCO(example_data, prefix="0.",
+                     nodes_selection=c("2_0","4_3"))
+
+    # Find the selection & adjust it at wish.
+    MRCO_res$selected_nodes
+    #Any sample not selected end up in a 'debris' cluster
+    head(MRCO_res$MRCO_clustering)
+}
 }
 \author{
 Peter Wolf

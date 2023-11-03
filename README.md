@@ -161,14 +161,9 @@ MRCO_clustering <- MRCO(example_data, prefix = "0.",
 # Each sample now has a unique cluster number composed of 'resolution'_'cluster'.
 # Output is returned in order of input.
 head(MRCO_clustering$nodes_selected$cells_NonGlobalClustering,3)
-#>   cell  id
-#> 1    1 4_3
-#> 2    2 4_3
-#> 3    3 2_1
+#> NULL
 table(MRCO_clustering$nodes_selected$cells_NonGlobalClustering$id)
-#> 
-#> 2_0 2_1 4_3 
-#>   5   3   2
+#> < table of extent 0 >
 
 # Automated Stable Cluster Detection
 # Note that stable clusters are relative to the data and should still be checked!
@@ -183,14 +178,11 @@ MRCO_clustering <- MRCO(example_data, prefix = "0.", suggest_cut = TRUE)
 # Stable clusters are representative for the trees 'branches'. 
 # We can check which clusters were selected as stable, just as before:
 MRCO_clustering$nodes_selected$nodes_selection
-#> [1] "1_0" "2_1" "3_1" "3_2"
+#> NULL
 # We see that automated suggestion found the first cluster to be 'stable' already.
 # This is not a problem though, since merge_downwards = FALSE prefers the sub clusters.
 head(MRCO_clustering$nodes_selected$cells_NonGlobalClustering, 3)
-#>   cell  id
-#> 1    1 2_1
-#> 2    2 3_2
-#> 3    3 2_1
+#> NULL
 
 # In larger datasets you likely won't see general clusters selected as stable,
 # since more information is available to detect the most stable candidates.
