@@ -13,28 +13,40 @@
 #'  This can help distinguish which metadata variable correlates with
 #'  cluster separation across increasing sensitivity.
 #'
-#' @param metadata data.frame or tibble with dim-names: row names cell identities and column names cell level metadata variables
-#' @param metadata_column_name character or tidy-selection style unquoted name of a metadata column to plot piechart nodes from
-#' @param prefix character, prefix of metadata columns which contain the increments of resolution
-#' @param suffix character, suffix of metadata columns which contain the increments of resolution
-#' @param nbins NULL, "all" or a numeric, set the number of bins to create from given metadata column if it is continuous data
-#' @param plot_col_gradient NULL for auto detect, or logical, TRUE to use continuous fill, FALSE for discrete fill; only applies when continuous metadata column is selected
+#' @param metadata data.frame or tibble: with row names (cell ids) and
+#'  column names (cell metadata variables)
+#' @param metadata_column_name character or unquoted name: name the metadata
+#'  column to plot piechart nodes from
+#' @param clustering_columns character prefix or tidy-select: to distinguish
+#' clustering resolution columns from metadata columns.
+#' @param nbins numeric, set the number of bins to create from given metadata
+#'  column if it is numeric data
+#' @param plot_col_gradient logical, TRUE to use continuous fill, FALSE for
+#'  discrete fill; only applies when numeric metadata column is selected
+#' @param suggest_cut logical, TRUE to suggest stable nodes based on graph
+#'  structure, FALSE to skip automated selection
+#' @param edge_num_size_filter numeric, give the minimum number of samples
+#'  required to draw an edge
+#' @param edge_prop_size_filter numeric, give the minimum edge ratio, which is
+#'  displaying the proportion of samples that move between nodes to draw an edge
 
-#' @param suggest_cut logical, TRUE to suggest stable nodes based on graph structure, FALSE to skip
-#' @param edge_num_size_filter numeric, give the number of cells that must be surpassed to draw edge, has to be set for each data set as its highly dependent on nr of cells within data
-#' @param edge_prop_size_filter numeric, give the proportion of cells that must move between nodes to draw edge
-#' @param nodes_selection vector or list, two ways to manually select a node by its global id from the graph:
-#' either give resolution step and cluster id from that resolution as underscore separated character string,
-#'  or give a list named where each name corresponds to a resolution step and its element is a single vector containing the cluster ids that are to be selected of that resolution.
-#' @param merge_downwards logical, cells which are in multiple selected clusters can either be assorted into the first or last cluster available for them.
-#' FALSE means that clusters are merged from the bottom towards the top of the graph, hence cells which are part of a higher resolution cluster will remain in it.
-#' TRUE means that clusters are merged from top towards the bottom, hence cells will end up in the lowest resolution cluster that they may end in.
+#' @param nodes_selection character vector or list, two ways to manually select
+#'  a node by its global id from the graph
+#' @param merge_downwards logical, cells which are in multiple selected clusters
+#'  can either be assorted into the first or last cluster available for them.
+#' FALSE means that clusters are merged from the bottom towards the top of
+#'  the graph, hence cells which are part of a higher resolution cluster will
+#'   remain in it.
+#' TRUE means that clusters are merged from top towards the bottom, hence cells
+#'  will end up in the lowest resolution cluster that they may end in.
+#' @param highlight_selection logical, TRUE to highlight selected nodes
+#' @param no_labels logical, TRUE to turn off cluster labels
 
 #' @param silent logical, TRUE to suppress messages
 #' @param warnings logical, FALSE to suppress warnings
 #' @param plot logical, FALSE to skip plotting
-#' @param no_labels logical, TRUE to turn off cluster labels, FALSE default for labeled clusters
-#' @param highlight_selection logical, TRUE to highlight selected nodes
+
+
 #' @param igraph_layout_type character giving the igraph layout type for graph creation; either "tree" or "sugiyama"
 #' @param edge_ratio_weigth numeric between 0 and 1, when stable edges are determined their edge ratio must be larger than the branch paths maximum edge ratio timed edge_ratio_weight.
 #' Therefore, a value closer to 1 is less permissive towards noise, whereas a value closer to 0 may handle noisier graphs better.
@@ -46,7 +58,7 @@
 
 MRCO <- function(metadata = NULL,
                  metadata_column_name = NULL,
-                 prefix = NULL, suffix = NULL,
+                 clustering_columns = NULL,
                  nbins = 4,
                  plot_col_gradient = FALSE,
                  suggest_cut = TRUE,
@@ -68,15 +80,15 @@ MRCO <- function(metadata = NULL,
   return_list <- list()
   # capture user given columns
   metadata_column_name <- enquo(metadata_column_name)
+  clustering_columns <- enquo(clustering_columns)
 
   input_list <- input_checker_MRCO(
     metadata = metadata,
     metadata_column_name = metadata_column_name,
-    prefix = prefix, suffix = suffix,
+    clustering_columns = clustering_columns,
     nbins = nbins,
     plot_col_gradient = plot_col_gradient,
     suggest_cut = suggest_cut,
-    # reduce_branchlist = reduce_branchlist,
     edge_num_size_filter = edge_num_size_filter,
     edge_prop_size_filter = edge_prop_size_filter,
     nodes_selection = nodes_selection,

@@ -88,14 +88,14 @@ build_graph_MRCO <- function(
       tmp_metadata <- metadata %>%
         select(!!metadata_column_name, "cell") %>%
         mutate(
-          "metadata_labels" = cut_number(!!metadata_column_name, n = nbins),
+          "metadata_labels" = cut_number(.data[[!!metadata_column_name]], n = nbins),
           !!metadata_column_name := dense_rank(.data$metadata_labels)
         )
     } else {
       # add grouping var, in this scenario redundant
       tmp_metadata <- metadata %>%
         select(!!metadata_column_name, "cell") %>%
-        mutate("metadata_labels" = !!metadata_column_name)
+        mutate("metadata_labels" = pull(metadata, !!metadata_column_name))
     }
 
     metadata_cell <- nodes_cell %>%
@@ -108,7 +108,7 @@ build_graph_MRCO <- function(
     metadata_summary <- metadata_cell %>%
       group_by(
         .data$id,
-        !!metadata_column_name,
+        .data[[!!metadata_column_name]],
         .data$metadata_labels
       ) %>%
       summarise("count" = n())

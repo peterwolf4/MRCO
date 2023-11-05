@@ -82,7 +82,6 @@ createplot_simplenode <- function(graph_layout,
                                   edge_prop_size_filter,
                                   highlight_selection = TRUE,
                                   no_labels) {
-  # plotting simple graph--
   plot_simplenode <- ggraph(graph_layout) +
     geom_edge_diagonal(
       aes(
@@ -125,42 +124,12 @@ createplot_simplenode <- function(graph_layout,
     scale_y_continuous(
       breaks = unique(graph_layout$y),
       labels = unique(as.character(graph_layout$resolution))
-    )
+    )+
+    ggnewscale::new_scale_colour()
 
-  if (!no_labels) {
-    # add labels
-    plot_simplenode <- plot_simplenode +
-      ggnewscale::new_scale_colour() +
-      geom_node_text(
-        aes(
-          label = .data$cluster,
-          fontface = "bold"
-        ),
-        colour = alpha("black", .75),
-        position = "identity",
-        size = 13 / .pt
-      ) +
-      geom_node_text(
-        aes(
-          label = .data$cluster,
-          fontface = "bold",
-          colour = if_else(.data$is_selected,
-            if_else(highlight_selection, "TRUE", "TRUE"),
-            if_else(highlight_selection, "FALSE", "TRUE")
-          )
-        ),
-        position = "identity"
-      ) +
-      scale_color_manual(
-        name = "Is Selected",
-        values = c(
-          "TRUE" = "white",
-          "FALSE" = alpha("white", .75)
-        ),
-        guide = "none"
-      )
+  if (!no_labels){
+    plot_simplenode <- createplot_labels(plot_simplenode, highlight_selection)
   }
-
   return(plot_simplenode)
 }
 
@@ -206,10 +175,11 @@ createplot_piechart <- function(metadata_column_name,
           x0 = .data$x,
           y0 = .data$y,
           r0 = 0,
-          r = if_else(.data$is_selected, if_else(highlight_selection, .5, .4), .4),
+          r = if_else(.data$is_selected,
+                      if_else(highlight_selection, .5, .4), .4),
           start = .data$start * 2 * pi,
           end = ((.data$end) * 2) * pi,
-          fill = !!metadata_column_name,
+          fill = .data[[!!metadata_column_name]],
           alpha = .data$is_selected
         ),
         data = graph_arc
@@ -222,17 +192,16 @@ createplot_piechart <- function(metadata_column_name,
           x0 = .data$x,
           y0 = .data$y,
           r0 = 0,
-          r = if_else(.data$is_selected, if_else(highlight_selection, .5, .4), .4),
+          r = if_else(.data$is_selected,
+                      if_else(highlight_selection, .5, .4), .4),
           start = .data$start * 2 * pi,
           end = ((.data$end) * 2) * pi,
-          fill = as.character(!!metadata_column_name),
+          fill = as.character(.data[[!!metadata_column_name]]),
           alpha = .data$is_selected
         ),
         data = graph_arc
       )
   }
-
-
 
   if (plot_col_gradient) {
     plot_piechart <- plot_piechart +
@@ -259,8 +228,6 @@ createplot_piechart <- function(metadata_column_name,
       )
   }
 
-
-
   if (highlight_selection &
     any(graph_layout$is_selected == TRUE)) {
     # highlight selected nodes
@@ -280,9 +247,6 @@ createplot_piechart <- function(metadata_column_name,
       )
   }
 
-
-
-
   plot_piechart <- plot_piechart +
     scale_y_continuous(
       breaks = unique(graph_layout$y),
@@ -290,35 +254,72 @@ createplot_piechart <- function(metadata_column_name,
     ) +
     coord_fixed()
 
-  if (!no_labels) {
+  if (!no_labels){
+    plot_piechart <- createplot_labels(plot_piechart, highlight_selection)
+  }
+
+  return(plot_piechart)
+}
+
+
+
+
+
+
+#' create plot labels MRCO
+#' @description create MRCO plot labels
+#' @param plot_MRCO ggplot, MRCO plot without labels
+#' @param highlight_selection logical, TRUE to highlight selected nodes
+#' @import ggplot2 ggnewscale dplyr tidygraph ggraph rlang
+
+createplot_labels <- function(plot_MRCO = NULL,
+                              highlight_selection = NULL) {
+  # selected_font <- "sans"
     # plot with labels
-    plot_piechart <- plot_piechart +
-      geom_node_text(
-        aes(
-          label = .data$cluster,
-          fontface = "bold"
-        ),
-        colour = alpha("black", .75),
-        position = "identity",
-        size = 13 / .pt
-      ) +
+    plot_MRCO +
       geom_node_text(
         aes(
           label = .data$cluster,
           fontface = "bold",
-          colour = .data$is_selected
+          colour = if_else(.data$is_selected,
+                           if_else(highlight_selection, "TRUE", "TRUE"),
+                           if_else(highlight_selection, "FALSE", "TRUE")
+          )
         ),
+        position = "identity",
+        size = 13 / .pt,
+        # family = selected_font
+        fontface = "bold"
+
+      ) +
+      scale_color_manual(
+        name = "Is Selected",
+        values = c(
+          "TRUE" = alpha("black", .95),
+          "FALSE" = alpha("black", .5)
+        ),
+        guide = "none"
+      )+
+    ggnewscale::new_scale_colour()+
+      geom_node_text(
+        aes(
+          label = .data$cluster,
+          colour = if_else(.data$is_selected,
+                           if_else(highlight_selection, "TRUE", "TRUE"),
+                           if_else(highlight_selection, "FALSE", "TRUE")
+          )
+        ),
+        # family = selected_font,
+        fontface = "plain",
         position = "identity"
       ) +
       scale_color_manual(
         name = "Is Selected",
         values = c(
-          "TRUE" = "white",
-          "FALSE" = alpha("white", .75)
+          "TRUE" = alpha("white", 1),
+          "FALSE" = alpha("white", .5)
         ),
         guide = "none"
       )
-  }
 
-  return(plot_piechart)
 }
