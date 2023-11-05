@@ -60,6 +60,9 @@ TRUE means that clusters are merged from top towards the bottom, hence cells wil
 
 \item{highlight_selection}{logical, TRUE to highlight selected nodes}
 }
+\value{
+list, containing cleaned up and additional functional internal dataframe subsets such as cm
+}
 \description{
 Input checker MRCO
 }

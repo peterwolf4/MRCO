@@ -1,4 +1,3 @@
-
 #' Cluster Stability Estimator
 #' @description Estimate stable cluster twig in relation to whole graph by four measures:
 #' \itemize{
@@ -18,61 +17,69 @@
 #' Therefore, a value closer to 1 is less permissive towards noise, whereas a value closer to 0 may handle noisier graphs better.
 #' @import tibble rlang dplyr
 
-cluster_stability_estimator_MRCO <- function(graph_layout,
-                                        edges,
-                                        branch_df,
-                                        edge_ratio_weigth = .9,
-                                        plot = TRUE
-                                        ){
-
-##create variables for scatter drop per branch:
+cluster_stability_estimator_MRCO <- function(
+    graph_layout,
+    edges,
+    branch_df,
+    edge_ratio_weigth = .9,
+    plot = TRUE) {
+  ## create variables for scatter drop per branch:
 
   clustering_steps <- nrow(branch_df)
 
-  ##For each branch path: quantify edge ratio
+  ## For each branch path: quantify edge ratio
   # ER = (N_edge/(2*Nsize_p))+(N_edge/(2*Nsize_n))
   # N_edge is number of cells in edge
   # Nsize is number of cells in node _p previous and _n next of edge
 
-  ##Needs: Edge list containing Nprev & Nnext
+  ## Needs: Edge list containing Nprev & Nnext
   edge_ratios <- edges %>%
     left_join(graph_layout %>%
-                  select("id","n_size"), by = c("from" = "id")) %>%
+      select("id", "n_size"), by = c("from" = "id")) %>%
     mutate("Nsize_p" = .data$n_size) %>%
     select(-"n_size") %>%
-    left_join(graph_layout %>% select("id","n_size"),
-              by = c("to" = "id")) %>%
-    mutate("Nsize_n" = .data$n_size,
-           "ER" = (.data$e_size/(2*.data$Nsize_p))+(.data$e_size/(2*.data$Nsize_n))#,
-           ) %>%
+    left_join(graph_layout %>% select("id", "n_size"),
+      by = c("to" = "id")
+    ) %>%
+    mutate(
+      "Nsize_n" = .data$n_size,
+      "ER" = (.data$e_size / (2 * .data$Nsize_p)) + (.data$e_size / (2 * .data$Nsize_n)) # ,
+    ) %>%
     select(-"n_size")
 
 
-  ##Then Create a long list of all paths and take their ER
+  ## Then Create a long list of all paths and take their ER
 
   branch_paths <- branch_df %>%
     pivot_longer(everything(),
-                 names_to = "branch",
-                 values_to = "id") %>%
+      names_to = "branch",
+      values_to = "id"
+    ) %>%
     group_by(.data$branch) %>%
     left_join(edge_ratios %>% ungroup() %>%
-                  select("from", "to", "ER"), by = c("id" = "from")) %>%
+      select("from", "to", "ER"), by = c("id" = "from")) %>%
     filter(.data$to %in% lead(unique(.data$id))) %>%
     select(-"to") %>%
     left_join(graph_layout %>% select("x", "resolution", "id"), by = c("id")) %>%
-    mutate("ER_max_b" = max(.data$ER, na.rm = TRUE),
-           "stable_edge" = .data$ER > (.data$ER_max_b*edge_ratio_weigth))
+    mutate(
+      "ER_max_b" = max(.data$ER, na.rm = TRUE),
+      "stable_edge" = .data$ER > (.data$ER_max_b * edge_ratio_weigth)
+    )
 
-  #like dense_rank but label gets higher for each time that diff in X is larger 1
-  return_seq_class <- function(X){
+  # like dense_rank but label gets higher for each time that diff in X is larger 1
+  return_seq_class <- function(X) {
     diff_x <- diff(X)
     return_v <- vector(mode = "numeric", length = length(X))
-    class_count <-  1
-    return_v[1] <-  1
+    class_count <- 1
+    return_v[1] <- 1
     for (i in seq_along(diff_x)) {
-      if (diff_x[i] == 1) {return_v[i+1] <- class_count}
-      if (diff_x[i] != 1) {class_count <-  class_count+1
-        return_v[i+1] <- class_count}
+      if (diff_x[i] == 1) {
+        return_v[i + 1] <- class_count
+      }
+      if (diff_x[i] != 1) {
+        class_count <- class_count + 1
+        return_v[i + 1] <- class_count
+      }
     }
     return(return_v)
   }
@@ -84,20 +91,18 @@ cluster_stability_estimator_MRCO <- function(graph_layout,
     group_by(.data$branch, .data$x, .data$seq_label) %>%
     mutate("stable_twig_seq_n" = n())
 
-    #if broader/upper clusters preferred use first on seq label as it will favor
-    #the lower resolution twig, else use last for higher resolution
-    branch_twig_stables <- branch_twig_eval %>%
-      group_by(.data$branch) %>%
-      filter(.data$stable_twig_seq_n == max(.data$stable_twig_seq_n,
-                                            na.rm = TRUE)) %>%
-      filter(first(.data$seq_label) == .data$seq_label) %>%
-      slice_max(order_by = .data$ER, n = 1, with_ties = FALSE)
+  # if broader/upper clusters preferred use first on seq label as it will favor
+  # the lower resolution twig, else use last for higher resolution
+  branch_twig_stables <- branch_twig_eval %>%
+    group_by(.data$branch) %>%
+    filter(.data$stable_twig_seq_n == max(.data$stable_twig_seq_n,
+      na.rm = TRUE
+    )) %>%
+    filter(first(.data$seq_label) == .data$seq_label) %>%
+    slice_max(order_by = .data$ER, n = 1, with_ties = FALSE)
 
 
   return_list <- list("estimated_stable" = unique(branch_twig_stables %>%
-                                                      pull(.data$id)))
+    pull(.data$id)))
   return(return_list)
-
-
-
 }

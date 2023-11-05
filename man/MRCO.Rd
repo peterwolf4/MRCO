@@ -9,9 +9,9 @@ MRCO(
   metadata_column_name = NULL,
   prefix = NULL,
   suffix = NULL,
-  metadata_column_nbins = NULL,
-  plot_col_gradient = NULL,
-  suggest_cut = FALSE,
+  metadata_column_nbins = 4,
+  plot_col_gradient = FALSE,
+  suggest_cut = TRUE,
   edge_num_size_filter = 0,
   edge_prop_size_filter = 0.05,
   branches_overflow = 50000,
@@ -45,8 +45,6 @@ MRCO(
 
 \item{edge_prop_size_filter}{numeric, give the proportion of cells that must move between nodes to draw edge}
 
-\item{branches_overflow}{numeric giving the max number of paths through the graph that is checked for each resolution step to protect memory overflow}
-
 \item{nodes_selection}{vector or list, two ways to manually select a node by its global id from the graph:
 either give resolution step and cluster id from that resolution as underscore separated character string,
  or give a list named where each name corresponds to a resolution step and its element is a single vector containing the cluster ids that are to be selected of that resolution.}
@@ -74,10 +72,18 @@ Therefore, a value closer to 1 is less permissive towards noise, whereas a value
 list, contains the graph layout. May contain selected nodes, the resulting clustering and the ggplot object if respective functions are used.
 }
 \description{
-MRCO visualizes clustering results of different resolutions in a treelike graph to directly show differences in sample compositions and give an intuitive solution to choosing the best amount of clusters for your experiment.
-MRCO uses multiple initial clusterings of any algorithm which were individually created iterating though some form of a resolution tuning parameter.
-Next to the clustering resolutions, metadata may also contain columns regarding other sample level information that might help evaluation on whether or not sub-clustering of a certain cluster is necessary or not.
-Additionally to the build in automated stable cluster suggestion one can choose to select clusters manually to easily receive a custom clustering for downstream analysis.
+MRCO visualizes the results of a clustering algorithm across different
+ resolutions (sensitivities) in a treelike graph.
+ This graph can display differences in sample compositions and give an
+ intuitive solution to choosing the best amount of clusters for your
+ experiment. \cr
+Simply run your clustering algorithm of choice multiple
+ times across a sensitivity range of interest. MRCO takes these clustering
+ results as input, compares them, finds stable clusters that represent
+ the data across your range of resolution, and returns the new clustering.\cr
+MRCO can also plot clusters as pie chart nodes to visualize the composition.
+ This can help distinguish which metadata variable correlates with
+ cluster separation across increasing sensitivity.
 }
 \examples{
 if (requireNamespace("utils")){
@@ -103,7 +109,4 @@ if (requireNamespace("utils")){
     #Any sample not selected end up in a 'debris' cluster
     head(MRCO_res$MRCO_clustering)
 }
-}
-\author{
-Peter Wolf
 }

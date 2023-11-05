@@ -46,7 +46,6 @@ devtools::install_github("peterwolf4/MRCO")
 
 
 ```{r load_example_data}
-
 # Load MRCO
 library(MRCO)
 
@@ -58,14 +57,14 @@ data("example_data")
 # Dataframe or Matrix of samples (rows) and increasing clustering resolutions (columns).
 # In single cell this will be: cells (rows) and increasing clustering resolution (columns)
 # The provided example data has its clustering results saved from column 6 to 9.
-example_clustering <- example_data[,seq(6,9)]
+example_clustering <- example_data[, seq(6, 9)]
 head(example_clustering)
 
 # Optional:
-# Extra metadata variables (columns) for your samples (rows). 
+# Extra metadata variables (columns) for your samples (rows).
 # Variable can be continuous (automatically binned) or discrete.
-# Note that given metadata & clustering is arbitrary. 
-head(example_data[,seq(1,5)])
+# Note that given metadata & clustering is arbitrary.
+head(example_data[, seq(1, 5)])
 
 
 # MRCO takes both clustering and metadata info as single dataframe input.
@@ -82,24 +81,24 @@ head(example_data)
 # This example could be the result of 4 k-mers clusterings with k = 1,2,3,4.
 MRCO(example_clustering)
 
-# MRCO is verbose when it comes to warnings. We can also use our merged data. 
+# MRCO is verbose when it comes to warnings. We can also use our merged data.
 # Missing inputs prefix and/or suffix to target clustering result columns.
 MRCO(example_data, prefix = "0.")
 
 # We can plot metadata variables as piecharts and see how samples cluster.
-MRCO(example_data, metadata_column_name = "quality",prefix = "0.")
+MRCO(example_data, metadata_column_name = "quality", prefix = "0.")
 # The example data shows no clear seperation based on sample quality.
 
-MRCO(example_data, metadata_column_name = "expr_A",prefix = "0.")
+MRCO(example_data, metadata_column_name = "expr_A", prefix = "0.")
 # Example A: graph hints that cluster 3 at resolution step 4 (4_3);
 # is split based on expression values of A. (All samples in 4_3 have high values of A)
 
-MRCO(example_data, metadata_column_name = "expr_B",prefix = "0.")
+MRCO(example_data, metadata_column_name = "expr_B", prefix = "0.")
 # Example B: graph hints that lefthand clusters have rather high-;
 # while lefthand have rather low- values of B.
 
 # Given examples are of course no final conclusions.
-# Rather, they are for a quick visual overview of your variables of interest, 
+# Rather, they are for a quick visual overview of your variables of interest,
 # and if they correlate to your clustering results.
 
 
@@ -108,14 +107,16 @@ MRCO(example_data, metadata_column_name = "expr_B",prefix = "0.")
 # but also need all other samples in second step clusters before the separation of B.
 # MRCO enables you to pick any of the clusters manually at wish.
 # Use merge_downwards (default) to preserve clusters from lower resolutions.
-MRCO_clustering <- MRCO(example_data, prefix = "0.", 
-     nodes_selection = c("4_3","2_0","2_1"),
-     merge_downwards = FALSE)
+MRCO_clustering <- MRCO(example_data,
+  prefix = "0.",
+  nodes_selection = c("4_3", "2_0", "2_1"),
+  merge_downwards = FALSE
+)
 
-# MRCO highlights selected clusters visually. 
+# MRCO highlights selected clusters visually.
 # Each sample now has a unique cluster number composed of 'resolution'_'cluster'.
 # Output is returned in order of input.
-head(MRCO_clustering$nodes_selected$cells_NonGlobalClustering,3)
+head(MRCO_clustering$nodes_selected$cells_NonGlobalClustering, 3)
 table(MRCO_clustering$nodes_selected$cells_NonGlobalClustering$id)
 
 # Automated Stable Cluster Detection
@@ -123,7 +124,7 @@ table(MRCO_clustering$nodes_selected$cells_NonGlobalClustering$id)
 # Note that this example data is too small for the algorithm to be truthfully useful.
 MRCO_clustering <- MRCO(example_data, prefix = "0.", suggest_cut = TRUE)
 
-# Stable clusters are representative for the trees 'branches'. 
+# Stable clusters are representative for the trees 'branches'.
 # We can check which clusters were selected as stable, just as before:
 MRCO_clustering$nodes_selected$nodes_selection
 # We see that automated suggestion found the first cluster to be 'stable' already.
@@ -132,7 +133,6 @@ head(MRCO_clustering$nodes_selected$cells_NonGlobalClustering, 3)
 
 # In larger datasets you likely won't see general clusters selected as stable,
 # since more information is available to detect the most stable candidates.
-
 ```
 
 ## Disclaimer

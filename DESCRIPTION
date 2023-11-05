@@ -30,7 +30,7 @@ Imports:
     ggnewscale,
 Config/testthat/edition: 3
 Depends: 
-    R (>= 4.1.0)
+    R (>= 4.3.0)
 LazyData: false
 URL:https://github.com/peterwolf4/MRCO
 BugReports:https://github.com/peterwolf4/MRCO/issues
