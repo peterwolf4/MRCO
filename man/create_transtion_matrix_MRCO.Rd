@@ -7,9 +7,13 @@
 create_transtion_matrix_MRCO(cm = cm, nodes = nodes)
 }
 \arguments{
-\item{cm}{synonym to cm, cluster matrix: data.frame, tibble or matrix excerpt from metadata, only containing each resolution step (in order)}
+\item{cm}{synonym to cm, cluster matrix: data.frame, tibble or matrix
+excerpt from metadata, only containing each resolution step (in order)}
 
 \item{nodes}{tibble of unique nodes, meaning for each resolution each cluster}
+}
+\value{
+data.frame tibble of edges from given nodes
 }
 \description{
 Create Transition Matrix MRCO

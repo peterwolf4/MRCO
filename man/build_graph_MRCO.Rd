@@ -9,7 +9,7 @@ build_graph_MRCO(
   cells_selected,
   metadata,
   metadata_column_name,
-  metadata_column_nbins,
+  nbins,
   silent,
   warnings,
   igraph_layout_type
@@ -24,13 +24,16 @@ build_graph_MRCO(
 
 \item{metadata_column_name}{character or tidy-selection style unquoted name of a metadata column to plot piechart nodes from}
 
-\item{metadata_column_nbins}{NULL, "all" or a numeric, set the number of bins to create from given metadata column if it is continuous data}
+\item{nbins}{NULL, "all" or a numeric, set the number of bins to create from given metadata column if it is continuous data}
 
 \item{silent}{logical, FALSE to suppress messages and warnings}
 
 \item{warnings}{logical, FALSE to supress warnings}
 
 \item{igraph_layout_type}{character giving the igraph layout type for graph creation; either "tree" or "sugiyama"}
+}
+\value{
+list of nodes, edges and graph layout
 }
 \description{
 Create Transition Matrix for MRCO

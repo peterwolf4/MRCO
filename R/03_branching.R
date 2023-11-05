@@ -1,7 +1,7 @@
 #' Create node branch list breath first function
 #' @param graph_layout active graph layout that is used, at this stage with unique x positions per unique branch
 #' @param edges edge list
-
+#' @returns data.frame tibble of branches required to walk the full graph
 #' @import tibble rlang dplyr stringr
 
 
@@ -21,7 +21,7 @@ create_node_branch_list_MRCO <- function(
   branch_str[length(res_steps), ] <- leaf_nodes
 
   # fill in branches from bottom to top into pre-allocated matrix
-  # for loop is required, since each row depends on the results of previous (right?)
+  # for loop required, since each row depends on the results of previous
 
   for (n in seq((length(res_steps) - 1), 1, -1)) {
     to_nodes <- branch_str[n + 1, ]

@@ -24,6 +24,9 @@ Therefore, a value closer to 1 is less permissive towards noise, whereas a value
 
 \item{plot}{logical, FALSE to skip plotting}
 }
+\value{
+character vector of stable nodes.
+}
 \description{
 Estimate stable cluster twig in relation to whole graph by four measures:
 \itemize{

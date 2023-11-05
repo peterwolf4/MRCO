@@ -11,6 +11,10 @@ check_unique_x_positions_MRCO(graph_layout = graph_layout, silent = silent)
 
 \item{silent}{logical, FALSE to suppress messages and warnings}
 }
+\value{
+layout_tbl_graph data.frame with unique x positions for each set of
+ continuous following up nodes, so called twigs
+}
 \description{
 check for uniqueness of x nodes in MRCO graph
 }

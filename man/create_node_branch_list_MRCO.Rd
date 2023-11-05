@@ -11,6 +11,9 @@ create_node_branch_list_MRCO(graph_layout = graph_layout, edges = edges)
 
 \item{edges}{edge list}
 }
+\value{
+data.frame tibble of branches required to walk the full graph
+}
 \description{
 Create node branch list breath first function
 }

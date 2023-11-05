@@ -15,6 +15,7 @@
 #' @param plot logical, FALSE to skip plotting
 #' @param edge_ratio_weigth numeric between 0 and 1, when stable edges are determined their edge ratio must be larger than the branch paths maximum edge ratio timed edge_ratio_weight.
 #' Therefore, a value closer to 1 is less permissive towards noise, whereas a value closer to 0 may handle noisier graphs better.
+#' @returns character vector of stable nodes.
 #' @import tibble rlang dplyr
 
 cluster_stability_estimator_MRCO <- function(
@@ -56,11 +57,18 @@ cluster_stability_estimator_MRCO <- function(
       values_to = "id"
     ) %>%
     group_by(.data$branch) %>%
-    left_join(edge_ratios %>% ungroup() %>%
-      select("from", "to", "ER"), by = c("id" = "from")) %>%
+    left_join(
+      edge_ratios %>% ungroup() %>%
+        select("from", "to", "ER"),
+      by = c("id" = "from"),
+      relationship = "many-to-many"
+    ) %>%
     filter(.data$to %in% lead(unique(.data$id))) %>%
     select(-"to") %>%
-    left_join(graph_layout %>% select("x", "resolution", "id"), by = c("id")) %>%
+    left_join(graph_layout %>% select("x", "resolution", "id"),
+      by = c("id"),
+      relationship = "many-to-many"
+    ) %>%
     mutate(
       "ER_max_b" = max(.data$ER, na.rm = TRUE),
       "stable_edge" = .data$ER > (.data$ER_max_b * edge_ratio_weigth)
@@ -102,7 +110,7 @@ cluster_stability_estimator_MRCO <- function(
     slice_max(order_by = .data$ER, n = 1, with_ties = FALSE)
 
 
-  return_list <- list("estimated_stable" = unique(branch_twig_stables %>%
-    pull(.data$id)))
-  return(return_list)
+  branch_twig_stables %>%
+    pull(.data$id) %>%
+    unique()
 }

@@ -7,6 +7,7 @@
 #' @param silent logical, FALSE to suppress messages and warnings
 #' @param igraph_layout_type character giving the igraph layout type for graph creation; either "tree" or "sugiyama"
 #' @param warnings logical, FALSE to supress warnings
+#' @returns list of nodes, edges and graph layout
 #' @import tibble rlang dplyr
 
 build_graph_MRCO <- function(
@@ -135,8 +136,10 @@ build_graph_MRCO <- function(
 
 
 #' Create Transition Matrix MRCO
-#' @param cm synonym to cm, cluster matrix: data.frame, tibble or matrix excerpt from metadata, only containing each resolution step (in order)
+#' @param cm synonym to cm, cluster matrix: data.frame, tibble or matrix
+#' excerpt from metadata, only containing each resolution step (in order)
 #' @param nodes tibble of unique nodes, meaning for each resolution each cluster
+#' @returns data.frame tibble of edges from given nodes
 #' @import tibble rlang dplyr
 
 create_transtion_matrix_MRCO <- function(
@@ -187,6 +190,8 @@ create_transtion_matrix_MRCO <- function(
 #' check for uniqueness of x nodes in MRCO graph
 #' @param graph_layout tibble, used graph_layout to plot and to be summarized
 #' @param silent logical, FALSE to suppress messages and warnings
+#' @returns layout_tbl_graph data.frame with unique x positions for each set of
+#'  continuous following up nodes, so called twigs
 #' @import tibble rlang dplyr stringr
 #'
 

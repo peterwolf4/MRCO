@@ -27,6 +27,9 @@ TRUE means that clusters are merged from top towards the bottom, hence cells wil
 
 \item{silent}{logical, FALSE to suppress messages and warnings}
 }
+\value{
+list, character vector of selected nodes and dataframe of clustering
+}
 \description{
 Custom Node  Selection MRCO
 }
