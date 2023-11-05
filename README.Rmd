@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: end -->
 
-```{r out.width = "100%" , fig.height=10, echo=FALSE, fig.cap="Stable Cluster Selection Across Multiple Resolutions. Be less dependent on your clustering algorithms resolution parameter!"}
+```{r out.width = "100%" , fig.height=10, echo=FALSE, fig.cap="Stable Cluster Selection Across Resolutions. Be less dependent on your clustering algorithms resolution parameter!"}
 knitr::include_graphics("man/figures/MRCO_banner.png")
 ```
 \br
@@ -65,7 +65,7 @@ head(example_data)
 
 `MRCO` can run with just the clustering results. In the example data the lowest resolution clustering has one cluster and the highest resolution 4. This example could be the result of 4 k-mers clustering iterations with `k = 1,2,3,4`. Note that `example_data` is arbitrary sampled for example purposes only. `MRCO` needs to know which columns contain the clustering results. `clustering_columns` uses [`tidy-select`](https://tidyselect.r-lib.org/-select) to enable users a well established column selection method. By default, passing a single character is handled as prefix. `plot` can be used to suppress plotting and only receive stable clustering results.
 
-```{r run_MRCO1, fig.show='asis', fig.cap="Fig. 1: A simple MRCO plot example"}
+```{r run_MRCO1, fig.show='asis'}
 MRCO(example_data, clustering_columns = starts_with("0."))
 # Is the same as
 MRCO(example_data, clustering_columns = "0.", plot = FALSE)
@@ -74,7 +74,7 @@ MRCO(example_data, clustering_columns = "0.", plot = FALSE)
 Usually `MRCO` is used to plot metadata variables of interest as piecharts. `metadata_column_name` can be a character or unquoted name of the column of interest. `highlight_selection` can disable highlighting of stable nodes, more on selection in topic [Stable Cluster Selection].
 `no_labels` can be used to remove cluster ids from nodes.
 
-```{r , fig.show='animate'}
+```{r  run_MRCO2}
 # We can plot metadata variables as piecharts and see how samples cluster.
 MRCO(example_data,
   metadata_column_name = "quality",
@@ -90,7 +90,7 @@ MRCO(example_data,
 ### Example interpretation
 Example data is sampled in a way that it resembles frequent real data scenarios.
 Given examples are of course no final conclusions. They are to demonstrate how the plot can be exploited to quickly draw high level conclusions about your data. Generally, users will want to find some experimental variable from metadata to be linked to a specific sub-cluster in the data.
-```{r run_MRCO3, fig.show='animate', fig.cap="Fig. 3: Example interpretation for MRCO graphs, metadata variable A"}
+```{r run_MRCO3}
 # MRCO can preview columns of input data when using a pipe to feed the metadata
 # Numerical metadata will be binned, set number of bins with nbin
 # Example A: graph hints that cluster 3 at resolution step 4 (4_3);
@@ -117,7 +117,7 @@ Use `merge_downwards = TRUE` (default) to preserve clusters from lower resolutio
 \item `plot` ggraph object of the plot for custom modifications
 }
 
-```{r run_MRCO5, fig.cap="Fig. 5: Example manual node selection"}
+```{r run_MRCO5}
 # MRCO highlights selected clusters visually.
 MRCO_clustering <- MRCO(example_data,
   clustering_columns = "0.",

@@ -10,10 +10,10 @@
 
 <div class="figure" style="text-align: center">
 
-<img src="man/figures/MRCO_banner.png" alt="Stable Cluster Selection Across Multiple Resolutions. Be less dependent on your clustering algorithms resolution parameter!" width="100%" />
+<img src="man/figures/MRCO_banner.png" alt="Stable Cluster Selection Across Resolutions. Be less dependent on your clustering algorithms resolution parameter!" width="100%" />
 <p class="caption">
-Stable Cluster Selection Across Multiple Resolutions. Be less dependent
-on your clustering algorithms resolution parameter!
+Stable Cluster Selection Across Resolutions. Be less dependent on your
+clustering algorithms resolution parameter!
 </p>
 
 </div>
@@ -95,14 +95,7 @@ and only receive stable clustering results.
 MRCO(example_data, clustering_columns = starts_with("0."))
 ```
 
-<div class="figure" style="text-align: center">
-
-<img src="man/figures/README-run_MRCO1-1.png" alt="Fig. 1: A simple MRCO plot example" width="65%" />
-<p class="caption">
-Fig. 1: A simple MRCO plot example
-</p>
-
-</div>
+<img src="man/figures/README-run_MRCO1-1.png" width="65%" style="display: block; margin: auto;" />
 
 ``` r
 # Is the same as
@@ -122,6 +115,11 @@ MRCO(example_data,
   metadata_column_name = "quality",
   clustering_columns = "0."
 )
+```
+
+<img src="man/figures/README-run_MRCO2-1.png" width="65%" style="display: block; margin: auto;" />
+
+``` r
 # same as writing quality with the quotes
 MRCO(example_data,
   metadata_column_name = quality,
@@ -129,9 +127,7 @@ MRCO(example_data,
 )
 ```
 
-<video width="65%" controls loop>
-<source src="man/figures/README-unnamed-chunk-3.webm" />
-</video>
+<img src="man/figures/README-run_MRCO2-2.png" width="65%" style="display: block; margin: auto;" />
 
 ### Example interpretation
 
@@ -148,18 +144,18 @@ sub-cluster in the data.
 # Example A: graph hints that cluster 3 at resolution step 4 (4_3);
 # is split based on expression values of A. (All samples in 4_3 have high values of A)
 example_data %>% MRCO("expr_A", "0.", nbins = 5)
+```
+
+<img src="man/figures/README-run_MRCO3-1.png" width="65%" style="display: block; margin: auto;" />
+
+``` r
 
 # Example B: graph hints that lefthand clusters have rather high-;
 # while lefthand have rather low- values of expr_B.
 example_data %>% MRCO("expr_B", "0.")
 ```
 
-<video width="65%" controls loop>
-<source src="man/figures/README-run_MRCO3.webm" />
-<p>
-Fig. 3: Example interpretation for MRCO graphs, metadata variable A
-</p>
-</video>
+<img src="man/figures/README-run_MRCO3-2.png" width="65%" style="display: block; margin: auto;" />
 
 ### Stable Cluster Selection
 
@@ -184,14 +180,7 @@ MRCO_clustering <- MRCO(example_data,
 )
 ```
 
-<div class="figure" style="text-align: center">
-
-<img src="man/figures/README-run_MRCO5-1.png" alt="Fig. 5: Example manual node selection" width="65%" />
-<p class="caption">
-Fig. 5: Example manual node selection
-</p>
-
-</div>
+<img src="man/figures/README-run_MRCO5-1.png" width="65%" style="display: block; margin: auto;" />
 
 ``` r
 
