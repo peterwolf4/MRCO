@@ -18,6 +18,6 @@ The result of calling `rhs(lhs)`.
 See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
 }
 \examples{
-c(5,7,8) \%>\% sum()
+c(5, 7, 8) \%>\% sum()
 }
 \keyword{internal}

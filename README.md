@@ -219,14 +219,7 @@ plotting.
 MRCO_clustering <- MRCO(example_data, clustering_columns = "0.", suggest_cut = TRUE)
 ```
 
-<div class="figure" style="text-align: center">
-
-<img src="man/figures/README-run_MRCO6-1.png" alt="Fig. 6: Example usage of stable node suggestion" width="65%" />
-<p class="caption">
-Fig. 6: Example usage of stable node suggestion
-</p>
-
-</div>
+<img src="man/figures/README-run_MRCO6-1.png" width="65%" style="display: block; margin: auto;" />
 
 ``` r
 

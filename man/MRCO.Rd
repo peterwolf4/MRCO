@@ -10,6 +10,7 @@ MRCO(
   clustering_columns = NULL,
   nbins = 4,
   suggest_cut = TRUE,
+  clean_split_columns = NULL,
   edge_num_size_filter = 0,
   edge_prop_size_filter = 0.05,
   nodes_selection = NULL,
@@ -26,17 +27,20 @@ MRCO(
 \item{metadata}{data.frame or tibble: with row names (cell ids) and
 column names (cell metadata variables)}
 
-\item{metadata_column_name}{character or unquoted name: name the metadata
-column to plot piechart nodes from}
+\item{metadata_column_name}{character or unquoted expression passed to
+\code{\link[dplyr:select]{dplyr::select()}} to select metadata variable to colour piechart nodes}
 
-\item{clustering_columns}{character prefix or tidy-select: to distinguish
-clustering resolution columns from metadata columns.}
+\item{clustering_columns}{characters or unquoted expressions passed to
+\code{\link[dplyr:select]{dplyr::select()}} to select all clustering resolutions from metadata}
 
 \item{nbins}{numeric, set the number of bins to create from given metadata
 column if it is numeric data}
 
 \item{suggest_cut}{logical, TRUE to suggest stable nodes based on graph
 structure, FALSE to skip automated selection}
+
+\item{clean_split_columns}{character or unquoted expression passed to
+\code{\link[dplyr:select]{dplyr::select()}} to select metadata variables to detect stable splits}
 
 \item{edge_num_size_filter}{numeric, give the minimum number of samples
 required to draw an edge}
@@ -48,12 +52,12 @@ displaying the proportion of samples that move between nodes to draw an edge}
 a node by its global id from the graph}
 
 \item{merge_downwards}{logical, cells which are in multiple selected clusters
- can either be assorted into the first or last cluster available for them.
+can either be assorted into the first or last cluster available for them.
 FALSE means that clusters are merged from the bottom towards the top of
- the graph, hence cells which are part of a higher resolution cluster will
-  remain in it.
+the graph, hence cells which are part of a higher resolution cluster will
+remain in it.
 TRUE means that clusters are merged from top towards the bottom, hence cells
- will end up in the lowest resolution cluster that they may end in.}
+will end up in the lowest resolution cluster that they may end in.}
 
 \item{plot}{logical, FALSE to skip plotting}
 
@@ -73,27 +77,30 @@ list, contains the graph layout. May contain selected nodes, the resulting clust
 }
 \description{
 MRCO visualizes the results of a clustering algorithm across different
- resolutions (sensitivities) in a treelike graph.
- This graph can display differences in sample compositions and give an
- intuitive solution to choosing the best amount of clusters for your
- experiment. \cr
+resolutions (sensitivities) in a treelike graph.
+This graph can display differences in sample compositions and give an
+intuitive solution to choosing the best amount of clusters for your
+experiment. \cr
 Simply run your clustering algorithm of choice multiple
- times across a sensitivity range of interest. MRCO takes these clustering
- results as input, compares them, finds stable clusters that represent
- the data across your range of resolution, and returns the new clustering.\cr
+times across a sensitivity range of interest. MRCO takes these clustering
+results as input, compares them, finds stable clusters that represent
+the data across your range of resolution, and returns the new clustering.\cr
 MRCO can also plot clusters as pie chart nodes to visualize the composition.
- This can help distinguish which metadata variable correlates with
- cluster separation across increasing sensitivity.
+This can help distinguish which metadata variable correlates with
+cluster separation across increasing sensitivity.
+To select variables of interest MRCO utilizes
+<\code{\link[=dplyr_tidy_select]{tidy-select}}>.
 }
 \examples{
-if (requireNamespace("utils")){
+if (requireNamespace("utils")) {
     library(MRCO)
     data(example_data)
 
     #Plot Clusters as Treelike Graph. Use the prefix to select clustering columns.
     MRCO(example_data, clustering_columns = "0.")
     # Piechart plot both discrete ...
-    MRCO(example_data, metadata_column_name = "quality",
+    MRCO(example_data,
+         metadata_column_name = "quality",
          clustering_columns = "0.")
     # ... and continuous sample level metadata.
     MRCO(example_data, "expr_A", clustering_columns = "0.")
@@ -101,11 +108,18 @@ if (requireNamespace("utils")){
     # Each node is pasted by its resolution step (Y axis) and its cluster NR.
     # The top node is called 0_1, the bottom leafs are 4_1, 4_2, 4_3, 4_0 etc.
     # Either select by named list or character vector.
-    MRCO(example_data, "batch", clustering_columns = "0.",
-         nodes_selection=list("3"=c(1, 0),
-                              "4"=c(2, 3)))
-    MRCO_res <- MRCO(example_data, clustering_columns = "0.",
-                     nodes_selection=c("2_0","4_3"))
+    MRCO(
+        example_data,
+        "batch",
+        clustering_columns = "0.",
+        nodes_selection = list("3" = c(1, 0),
+                               "4" = c(2, 3))
+    )
+    MRCO_res <- MRCO(
+        example_data,
+        clustering_columns = "0.",
+        nodes_selection = c("2_0", "4_3")
+    )
 
     # Find the selection & adjust it at wish.
     MRCO_res$selected_nodes

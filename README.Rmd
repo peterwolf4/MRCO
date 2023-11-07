@@ -139,7 +139,7 @@ By choosing stable clusters independently, rather than from a single resolution,
 Documentation on the details of stable cluster selection is planned.
 `suggest_cut` can be set to FALSE to speed up runtime when only plotting.
 
-```{r run_MRCO6, fig.cap="Fig. 6: Example usage of stable node suggestion"}
+```{r run_MRCO6}
 # Stable clusters are relative to the data and should still be checked
 # Note that this example data is too small for the algorithm to be truthfully useful.
 MRCO_clustering <- MRCO(example_data, clustering_columns = "0.", suggest_cut = TRUE)
