@@ -8,9 +8,9 @@ MRCO(
   metadata = NULL,
   metadata_column_name = NULL,
   clustering_columns = NULL,
+  clean_split_columns = NULL,
   nbins = 4,
   suggest_cut = TRUE,
-  clean_split_columns = NULL,
   edge_num_size_filter = 0,
   edge_prop_size_filter = 0.05,
   nodes_selection = NULL,
@@ -33,14 +33,14 @@ column names (cell metadata variables)}
 \item{clustering_columns}{characters or unquoted expressions passed to
 \code{\link[dplyr:select]{dplyr::select()}} to select all clustering resolutions from metadata}
 
+\item{clean_split_columns}{character or unquoted expression passed to
+\code{\link[dplyr:select]{dplyr::select()}} to select metadata variables to detect stable splits}
+
 \item{nbins}{numeric, set the number of bins to create from given metadata
 column if it is numeric data}
 
 \item{suggest_cut}{logical, TRUE to suggest stable nodes based on graph
 structure, FALSE to skip automated selection}
-
-\item{clean_split_columns}{character or unquoted expression passed to
-\code{\link[dplyr:select]{dplyr::select()}} to select metadata variables to detect stable splits}
 
 \item{edge_num_size_filter}{numeric, give the minimum number of samples
 required to draw an edge}

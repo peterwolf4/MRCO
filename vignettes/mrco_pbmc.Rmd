@@ -1,0 +1,252 @@
+---
+title: "MRCO_pbmc"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MRCO_pbmc}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  dpi= 240,
+  fig.width = 9,
+  fig.height = 5,
+  out.width = "100%"
+)
+```
+
+## Load Data 
+
+To demonstrate a standard `MRCO` workflow we load in some example data.
+Here, we load [pbmc](https://singlecell.broadinstitute.org/single_cell/study/SCP424/single-cell-comparison-pbmc-data#study-summary) 10x single cell sequencing data from [`SimBenchData`](https://www.bioconductor.org/packages/release/data/experiment/html/SimBenchData.html) with [`ExperimentHub`](https://www.bioconductor.org/packages/release/bioc/html/ExperimentHub.html).
+The resulting object is saved as [`SingleCellExperiment`](https://www.bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html) class.
+
+```{r setup, message = FALSE}
+if (!require("SimBenchData", quietly = TRUE)){
+    if (!require("BiocManager", quietly = TRUE)){
+        install.packages("BiocManager")
+    }
+    BiocManager::install("SimBenchData")
+    require("SimBenchData", quietly = TRUE)
+}
+
+eh <- ExperimentHub::ExperimentHub()
+alldata <- AnnotationHub::query(eh, "SimBenchData")
+SimBench_metadata<- SimBenchData::showMetaData()
+
+pbmc10x_id <- SimBench_metadata[SimBench_metadata$Name == "pbmc 10x",]
+pbmc10x_id
+pbmc10x <- alldata[[pbmc10x_id$ExperimentHub_ID]]
+
+pbmc10x  
+
+```
+
+## Seurat Standart Workflow
+
+In this example we convert the `SingleCellExperiment` object to [`Seurat`](https://satijalab.org/seurat/). 
+The `Seurat` workflow enables us to quickly perform multiple clustering iterations on the same object, but it is not required to use `MRCO`.
+If you use a different clustering workflow you can recreate a `data.frame` similar to the result from this section and use `MRCO` directly.
+Here, I show a quick example how to convert a `SingleCellExperiment` to `Seurat` in R. 
+
+```{r SeuratRunthrough, message = FALSE, results='hide'}
+if (!require("Seurat", quietly = TRUE)){
+    install.packages("Seurat")
+    require("Seurat", quietly = TRUE)
+}
+
+# Create Seurat Object with raw counts 
+pbmc <- CreateSeuratObject(counts = SingleCellExperiment::counts(pbmc10x))
+# Add published normalized data
+pbmc[["RNA"]]$data <- SingleCellExperiment::logcounts(pbmc10x)
+# Add all published Metadata variables
+pbmc <- AddMetaData(pbmc, as.data.frame(SingleCellExperiment::colData(pbmc10x)))
+# Add published TSNE dimensional reduction
+tm_red <- reducedDim(pbmc10x)
+colnames(tm_red) <- c("TSNE1","TSNE2")
+pbmc[["TSNEp"]] <- CreateDimReducObject(embeddings = tm_red, key = "TSNEp_", assay = "RNA")
+# Create neighbor graph for the clustering based on published TSNE reduction
+pbmc <- FindNeighbors(pbmc,reduction = "TSNEp",dims = 1:2)
+
+# Iterate through the clustering algorithm multiple times
+for (n in seq(.1,1,.1)){
+    pbmc <- FindClusters(pbmc, resolution = n)
+}
+
+# MRCO only needs the metadata 
+pbmc_m <- pbmc@meta.data
+
+```
+
+The input required for `MRCO`: a `data.frame` or `tibble` of multiple clustering resolutions in separate columns.
+Additional metadata can be supplied in other columns of the same `data.frame`.
+
+```{r Finsihed_pbmc}
+class(pbmc_m)
+colnames(pbmc_m)
+```
+
+
+## Use MRCO
+
+### Load and Install
+`MRCO` takes the input `data.frame` as first argument.
+This emphasizes working with pipe operators since `MRCO` also supports [`tidy-select`](https://tidyselect.r-lib.org/reference/language.html).
+First, we load or install `MRCO`.
+
+```{r LoadMRCO}
+if (!require("MRCO", quietly = TRUE)){
+    if (!require("devtools", quietly = TRUE)){
+        install.packages("devtools")
+    }
+    devtools::install_github("peterwolf4/MRCO")
+    require("MRCO", quietly = TRUE)
+}
+```
+
+### Simple Example Run
+
+Now we can use the previously created single cell metadata including the clustering annotations of 10 separate resolutions.
+`MRCO` only needs to know which of the columns from the input contains the clustering results.
+To plot every cells movement between clusters we set the edge proportional size filter down to 0 for this example.
+```{r ApplyMRCO}
+# First get the automated estimation & a quality overview
+MRCO(pbmc_m, clustering_columns = "RNA_snn", edge_prop_size_filter=0)
+```
+The `MRCO` graph displays each resolution as a slice of a stacked tree like graph. 
+The two clusters on the right are very stable because their cells do not travel to any other cluster across all of the 10 tested resolution steps. 
+Though the `igraph` layout algorithm tries to minimize the number of intersections between branches of the trees, it can still happen given the complexity of single cell data.
+Whenever graphs appear to be very little ordered, therefore less linear, it is a sign towards less stable clusters as well.
+Though it is not possible to directly trace back to why clusters are unstable judging from the MRCO graph alone, it still gives a good visual feedback on whether data appears to be well structured in clusters or not.
+**If your `MRCO` plot displays clearly separated clusters which remain stable across many of the tested resolutions it is a good sign that your analysis results will be reproducible, even with slightly different clustering settings!**
+Please do keep in mind that if the range of resolutions is too small `MRCO` will have almost no extra information to judge the clusters stability.
+
+To filter out minor edges which are only drawn by a few cells and not a biologically relevant cell population we use the `edge_prop_size_filter`.
+Ideally, you will want to check any new data set at least once without edge filters as it gives a direct visual overview on how well your clustering algorithm handles the data.
+Assuming the data has enough information to separate each sample (cell) into a distinct set of groups, you'd expect to see very little edges containing few cells visible in the plot.
+This is based on the assumption that once a certain resolution threshold of the clustering algorithm of choice is reached, a large proportion of cells will create a new stable sub cluster of the larger original one.
+In this case, a single edge contains most of the cells of the emerging stable sub cluster which will then be retained in subsequent higher resolutions.
+
+### Analyzing Metadata Varaibles
+
+```{r InterpretMRCO}
+# Compare the Seurat clustering to the published clusters located in "Cluster"
+MRCO(pbmc_m, "Cluster", "RNA_snn", highlight_selection = F, no_labels = T)
+```
+
+Here, we can see that the clustering provided by the authors is very broad, considering there are quite a few distinct sub populations of cells which do look rather stable with the default proportional edge size filter of 0.05.
+However, depending on the experimental scope it may not always be best to differentiate each sub population.
+We can plot the `MRCO` graph with celltype annotations by the authors.
+
+```{r celltypeMRCO, fig.width = 10}
+# Compare the Seurat clustering to the published clusters located in "Cluster"
+MRCO_res <- MRCO(pbmc_m, "CellType", "RNA_snn")
+```
+Here, we can see that B cells are all annotated as single cluster. Depending on the downstream analysis this might deliver a better base for comparison than separate specific sub clusters of B cells.
+
+### Get Optimized Clustering Result
+
+`MRCO` enables users to receive a custom selected clustering from the given input.
+Any of the initial clusters can be selected manually to create a flexible tool suitable for many applications.
+The automated stable selection as well as manual selection will be saved in a list that is returned by `MRCO`. 
+Each node must have a unique id for the graph. It is created by pasting the resolution step with the cluster id from that step.
+This results in labels like 1_0 for cluster 0 from resolution step 1, and so forth.
+`MRCO` uses the `merge_downwards` argument to control how cells which are part of multiple selected clusters are assigned. 
+A more traceable explanation on a minimal example can be found on the [git readme](https://github.com/peterwolf4/MRCO).
+
+```{r selectionMRCO}
+# Selected Nodes are automatically suggested
+MRCO_res$selected_nodes
+
+# Return the new clustering
+head(MRCO_res$MRCO_clustering)
+
+# This clustering can be used on the original Seurat or SingleCellExperiment:
+# You should check that cells align 
+# MRCO always returns cells in same order as input metadata
+if (all(rownames(pbmc@meta.data) == MRCO_res$MRCO_clustering$cell)){
+    pbmc@meta.data$MRCO <- MRCO_res$MRCO_clustering$id
+}
+
+# Now the Seurat object has the column MRCO containing the stable assignments 
+
+```
+
+### Adjust Plot
+
+Another entry of the result list is the plot itself.
+This enables users to adjust the final plot with any ggplot command. 
+
+```{r plotadjMRCO, fig.height = 9}
+# sometimes the label colours are hard to distinguish, try facet_wrap()
+MRCO_res$plot+
+    ggplot2::ggtitle(label = "MRCO",
+            subtitle = "PBMC Example")+
+    ggplot2::facet_wrap(~CellType, ncol = 2)+
+    ggplot2::theme(legend.position = "none")
+
+```
+Whenever there are many clusters the `MRCO` graph is getting quite large.
+To zoom into subsections of the plot use `coord_fixed()` without removing data from the plot.
+The x coordinates for every node of the graph are in the list that is returned when running `MRCO` in the `graph_layout` slot.
+
+```{r plotzoomMRCO, fig.width = 11, warning = FALSE}
+# Example: Zoom into B-Cells and Cytotoxic T Cells
+
+# Find the x position of interest from the graph_layout slot:
+# Requires the positions of the left hand B Cell node (10_9)
+# and the right hand Cytotoxic T Cell (10_14)  
+MRCO_res$graph_layout[MRCO_res$graph_layout$id %in% c("10_9","10_14"),]
+
+# 10_9 is positioned at -15.46 and 10_14 at -4.46
+
+
+# To zoom into the MRCO plot use coord_fixed to set the view limits
+MRCO_res$plot+
+    ggplot2::coord_fixed(xlim = c(-16,-4))
+
+# Alternatively, data can be removed by restricting the x coordinates range
+# may introduce visual bugs when edges from outside of plotted area contribute
+MRCO_res$plot+
+    ggplot2::scale_x_continuous(limits = c(-16,-4))
+
+```
+
+
+
+### Testing Expressions
+
+`MRCO` can also visualize exported expression data if it is saved into the input metadata.
+[EBF1 and YBX3](https://www.nature.com/articles/s41467-021-27232-5) have been found to impact B cell development.
+Gene names can be matched to other ids online on [ensembl](https://www.ensembl.org/index.html).
+ 
+```{r Expression plotting}
+#available genes in data
+all_genes <- rownames(SeuratObject::GetAssayData(pbmc))
+
+#ensembl id for the gene names were looked up online
+marker_genes <- c("EBF1" = "ENSG00000164330" , "YBX3" = "ENSG00000060138")
+
+# transpose the count matrix section of interest into metadata format 
+
+marker_expr <- t(SeuratObject::GetAssayData(pbmc, "RNA")[which(all_genes %in% 
+                                                            marker_genes),])
+# match order of names if renaming columns
+colnames(marker_expr) <- names(marker_genes)[match(colnames(marker_expr),
+                                                   marker_genes)]
+
+# Add to metadata or to Seurat object, be sure rows align
+if (all(rownames(pbmc_m) == rownames(marker_expr))){
+    pbmc_m <- cbind(pbmc_m, marker_expr)
+}
+
+#Visualize if markers split sub population of B cells:
+
+MRCO(pbmc_m[pbmc_m$CellType == "B cell",],
+     "EBF1", clustering_columns = "RNA_snn", nbins=3, suggest_cut=FALSE)
+
+```
+

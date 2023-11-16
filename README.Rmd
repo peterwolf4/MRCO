@@ -63,7 +63,7 @@ head(example_data)
 
 ### Plot
 
-`MRCO` can run with just the clustering results. In the example data the lowest resolution clustering has one cluster and the highest resolution 4. This example could be the result of 4 k-mers clustering iterations with `k = 1,2,3,4`. Note that `example_data` is arbitrary sampled for example purposes only. `MRCO` needs to know which columns contain the clustering results. `clustering_columns` uses [`tidy-select`](https://tidyselect.r-lib.org/-select) to enable users a well established column selection method. By default, passing a single character is handled as prefix. `plot` can be used to suppress plotting and only receive stable clustering results.
+`MRCO` can run with just the clustering results. In the example data the lowest resolution clustering has one cluster and the highest resolution 4. This example could be the result of 4 k-mers clustering iterations with `k = 1,2,3,4`. Note that `example_data` is arbitrary sampled for example purposes only. `MRCO` needs to know which columns contain the clustering results. `clustering_columns` uses [`tidy-select`](https://tidyselect.r-lib.org/reference/language.html) to enable users a well established column selection method. By default, passing a single character is handled as prefix. `plot` can be used to suppress plotting and only receive stable clustering results.
 
 ```{r run_MRCO1, fig.show='asis'}
 MRCO(example_data, clustering_columns = starts_with("0."))
@@ -83,7 +83,9 @@ MRCO(example_data,
 # same as writing quality with the quotes
 MRCO(example_data,
   metadata_column_name = quality,
-  clustering_columns = "0.", no_labels = TRUE
+  clustering_columns = "0.", 
+  no_labels = TRUE,
+  highlight_selection = FALSE
 )
 ```
 

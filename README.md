@@ -123,7 +123,9 @@ MRCO(example_data,
 # same as writing quality with the quotes
 MRCO(example_data,
   metadata_column_name = quality,
-  clustering_columns = "0.", no_labels = TRUE
+  clustering_columns = "0.", 
+  no_labels = TRUE,
+  highlight_selection = FALSE
 )
 ```
 

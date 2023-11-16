@@ -1,5 +1,3 @@
-# usethis::use_test("wrong_input_combinations")
-
 # Load example_data
 data(example_data)
 

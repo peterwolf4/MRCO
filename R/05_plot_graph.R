@@ -63,7 +63,10 @@ plot_graph_MRCO <- function(metadata_column_name,
             axis.ticks.y = element_line(size = .1, linetype = 1),
             axis.ticks.length.y = unit(1, "mm"),
             panel.grid.major.y = element_line(color = alpha("lightblue", 0.35)),
-            panel.background = element_blank()
+            panel.background = element_blank(),
+            legend.position = "bottom",
+            legend.text = element_text(angle = 45),
+            legend.key.size=unit(.1,"npc")
         )
     plot(plot_MRCO)
     return(plot_MRCO)
